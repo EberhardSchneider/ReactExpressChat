@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -136,10 +135,20 @@ app.use(sassMiddleware({
   indentedSyntax: true, // true = .sass and false = .scss
   sourceMap: true
 }));
+
+
+// ____________________________________________________________ ROUTES
+
+let users = {};
+
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/users', (req,res,next) => {
+    res.send( users );
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -164,11 +173,29 @@ app.use(function(err, req, res, next) {
 var io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
-   console.log("Connected");
+   console.log("Connection started...");
 
-   socket.on('klick', () => {
-       socket.emit('antwort');
+   socket.on('add user', (data) => {
+       users[socket.id] = data.name;
+       socket.broadcast.emit('users updated', { users: users });
+       socket.emit('users updated', { users: users });
    });
+
+   socket.on('new message', (data) => {
+      const message = { user: users[socket.id], message: data.message };
+      socket.broadcast.emit('new message', message);
+       socket.emit('new message', message);
+
+   });
+
+   socket.on('disconnecting', (reason) => {
+       socket.broadcast.emit('users updated', { users: users });
+       delete users[socket.id];
+       socket.broadcast.emit('users updated', { users: users });
+
+   });
+
+
 });
 
 

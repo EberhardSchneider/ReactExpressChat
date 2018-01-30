@@ -1,0 +1,24 @@
+#chat-user-view {
+    height: 80vh;
+    margin: 10vh 0;
+
+}
+
+#user-names {
+    background-color: lightcyan;
+    padding: 1em;
+}
+
+#chat-message-view {
+    height: 80vh;
+    margin: 10vh 0;
+    background-color: lightseagreen;
+    padding: 1em;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
