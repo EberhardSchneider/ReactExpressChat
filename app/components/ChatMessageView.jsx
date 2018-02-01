@@ -1,17 +1,18 @@
 import React from 'react';
-import ChatInputMessage from './ChatInputMessage.jsx';
-const ChatMessageView = (props) => {
-    const messages = props.messages;
+import ChatMessageList from './ChatMessageList.jsx';
+import ChatMessageInput from './ChatMessageInput.jsx';
 
-    return (<div id="chat-message-view" className={"two-thirds column"}>
-        <h4>Messages</h4>
-        {messages.map((message) => {
-            return <div className="chat-message" key={message.id}>
-                {message.author}: {message.body}
-            </div>
-        })}
-        <ChatInputMessage socket={props.socket}/>
-    </div>);
+const ChatMessageView = (props) => {
+  const messages = props.messages.filter((message) => {
+    return (message.roomId === props.selectedRoom);
+  });
+  return (<div id='chat-message-view' className={'two-thirds column'}>
+    <h4>{props.selectedRoomName}</h4>
+
+    <ChatMessageList messages={messages}/>
+
+    <ChatMessageInput socket={props.socket}/>
+  </div>);
 };
 
 module.exports = ChatMessageView;

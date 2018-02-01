@@ -6,27 +6,35 @@ import ChatView from './ChatView.jsx';
 import LoginView from './LoginView.jsx';
 
 class MainView extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { loggedIn: false, users: [] };
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedIn: false
+    };
 
-        this.loginNewUser = this.loginNewUser.bind(this);
-    }
+    this.loginNewUser = this.loginNewUser.bind(this);
+  }
 
-    loginNewUser( user ) {
-        this.socket = io();
+  loginNewUser(user) {
 
-            this.setState({socket: this.socket});
+    console.log('Logging in ' + user);
+    this.socket = io();
 
+    this.socket.emit('add user', {
+      name: user
+    });
 
-        this.socket.emit('add user', { name: user });
+    this.setState({
+      socket: this.socket,
+      loggedIn: true
+    });
+  }
 
-        this.setState({ loggedIn: true});
-    }
-
-    render() {
-        return this.state.loggedIn ? <ChatView socket={this.state.socket}/> : <LoginView loginNewUser={this.loginNewUser}/>;
-    }
+  render() {
+    return this.state.loggedIn ?
+      <ChatView socket={this.state.socket}/> :
+      <LoginView loginNewUser={this.loginNewUser}/>;
+  }
 }
 
 module.exports = MainView;

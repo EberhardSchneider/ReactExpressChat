@@ -6,20 +6,20 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 
-var index = require('./routes/index');
+const guid = require('guid');
 
+var index = require('./routes/index');
 var app = express();
 
 // server setup from bin/www
 
-var debug = require('debug')('chat:server');
 var http = require('http');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = process.env.PORT || '3000';
 app.set('port', port);
 
 /**
@@ -33,68 +33,7 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-    var port = parseInt(val, 10);
-
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
-
-    if (port >= 0) {
-        // port number
-        return port;
-    }
-
-    return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-    if (error.syscall !== 'listen') {
-        throw error;
-    }
-
-    var bind = typeof port === 'string'
-        ? 'Pipe ' + port
-        : 'Port ' + port;
-
-    // handle specific listen errors with friendly messages
-    switch (error.code) {
-        case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
-            process.exit(1);
-            break;
-        case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
-            process.exit(1);
-            break;
-        default:
-            throw error;
-    }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
-}
 
 // webpack setup
 
@@ -104,20 +43,22 @@ const webpackConfig = require('./webpack.config.js');
 const compiler = webpack(webpackConfig);
 
 app.use(require('webpack-dev-middleware')(compiler, {
-    hot: true,
-    filename: 'bundle.js',
-    publicPath: '/assets/',
-    stats: {
-        colors: true,
-    },
-    historyApiFallback: true,
+  hot: true,
+  filename: 'bundle.js',
+  publicPath: '/assets/',
+  stats: {
+    colors: true
+  },
+  historyApiFallback: true
 }));
 
 app.use(require('webpack-hot-middleware')(compiler, {
-    log: console.log,
-    path: '/__webpack_hmr',
-    heartbeat: 10 * 1000,
+  log: console.log,
+  path: '/__webpack_hmr',
+  heartbeat: 10 * 1000
 }));
+
+// --------------------------------------------------
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -127,7 +68,9 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
@@ -136,18 +79,18 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 
-
 // ____________________________________________________________ ROUTES
-
-let users = {};
-
-
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', (req,res,next) => {
-    res.send( users );
+
+app.use('/users', (req, res, next) => {
+  res.send(users);
+});
+
+app.use('/rooms', (req, res, next) => {
+  res.send(rooms);
 });
 
 // catch 404 and forward to error handler
@@ -161,7 +104,8 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get('env') === 'development' ?
+    err : {};
 
   // render the error page
   res.status(err.status || 500);
@@ -170,35 +114,104 @@ app.use(function(err, req, res, next) {
 
 // web socket handling
 
+let users = [];
+let rooms = [];
+let userName = '';
+let roomId = '';
+
+/**
+users: {
+  socket.id: {
+    name: String
+    room: String of room id
+  }
+}
+**/
+
 var io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
-   console.log("Connection started...");
+  console.log('Connection started...');
 
-   socket.on('add user', (data) => {
-       users[socket.id] = data.name;
-       socket.broadcast.emit('users updated', { users: users });
-       socket.emit('users updated', { users: users });
-   });
+  socket.on('add user', (data) => {
+    const newUser = {
+      id: socket.id,
+      name: data.name,
+      roomId: undefined
+    };
+    users.push(newUser);
+    triggerUserUpdate(socket);
 
-   socket.on('new message', (data) => {
-      const message = { user: users[socket.id], message: data.message };
-      socket.broadcast.emit('new message', message);
-       socket.emit('new message', message);
+    userName = data.name;
+  });
 
-   });
+  socket.on('add room', (data) => {
+    const id = guid.raw();
+    const newRoom = {
+      id: id,
+      name: data.name
+    };
+    rooms.push(newRoom);
+    triggerRoomUpdate(socket);
+  });
 
-   socket.on('disconnecting', (reason) => {
-       socket.broadcast.emit('users updated', { users: users });
-       delete users[socket.id];
-       socket.broadcast.emit('users updated', { users: users });
+  socket.on('new message', (data) => {
+    const message = {
+      id: guid.raw(),
+      userId: socket.id,
+      roomId: roomId,
+      body: data.message
+    };
+    socket.broadcast.emit('messages updated', message);
+    socket.emit('messages updated', message);
+  });
 
-   });
+  socket.on('join room', (data) => {
+    let currentUser = users.filter((item) => {
+      return socket.id === item.id;
+    })[0];
+    console.log('Current User:');
+    console.log(currentUser);
+    const usersWithoutCurrent = users.filter((item) => {
+      return socket.id !== item.id;
+    });
+    users = usersWithoutCurrent;
+    currentUser.roomId = data.key;
+    console.log('Updated User:');
+    console.log(currentUser);
+    users.push(currentUser);
+    console.log(users);
+    triggerUserUpdate(socket);
+  });
 
+  socket.on('disconnecting', (reason) => {
+    socket.broadcast.emit('users updated', {
+      users: users
+    });
+    delete users[socket.id];
+    triggerUserUpdate(socket);
+
+
+  });
 
 });
 
+function triggerUserUpdate(socket) {
+  socket.broadcast.emit('users updated', {
+    users: users
+  });
+  socket.emit('users updated', {
+    users: users
+  });
+}
 
-
+function triggerRoomUpdate(socket) {
+  socket.broadcast.emit('rooms updated', {
+    rooms: rooms
+  });
+  socket.emit('rooms updated', {
+    rooms: rooms
+  });
+}
 
 module.exports = app;
