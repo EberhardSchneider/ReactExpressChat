@@ -116,7 +116,7 @@ app.use(function(err, req, res, next) {
 
 let users = {};
 let rooms = {};
-let userName = '';
+let userName;
 let roomId = '';
 
 /**
@@ -145,11 +145,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('add room', (data) => {
-    const id = guid.raw();
     const newRoom = {
       name: data.name
     };
-    rooms[id] = newRoom;
+    rooms[guid.raw()] = newRoom;
     triggerRoomUpdate(socket);
   });
 
@@ -166,14 +165,16 @@ io.on('connection', (socket) => {
 
   socket.on('join room', (data) => {
     users[socket.id].roomId = data.key;
+    roomId = data.key;
     triggerUserUpdate(socket);
   });
 
   socket.on('disconnecting', (reason) => {
+    delete users[socket.id];
     socket.broadcast.emit('users updated', {
       users: users
     });
-    delete users[socket.id];
+
     triggerUserUpdate(socket);
 
 
