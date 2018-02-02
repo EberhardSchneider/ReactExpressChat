@@ -23,12 +23,14 @@ class ChatRoomList extends React.Component {
     return rooms ? (<div id="room-list">
       {
         // TODO: get selected room from object
-        Object.values(rooms).map((room) => {
-          const className = (room.id == selectedRoom)
+        Object.entries(rooms).map((entry) => {
+          const id = entry[0];
+          const room = entry[1];
+          const className = (id == selectedRoom)
             ? 'room-list-item active'
             : 'room-list-item';
-          return <div key={room.id}
-            onClick={this.handleClick.bind(this, room.id)}
+          return <div key={id}
+            onClick={this.handleClick.bind(this,id)}
             className={className}>
             {room.name}
           </div>;

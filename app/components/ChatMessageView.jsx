@@ -1,5 +1,5 @@
 import React from 'react';
-import helper from '../helpers/DataHelper';
+import helper from '../helpers/DataHelpers';
 import ChatMessageList from './ChatMessageList.jsx';
 import ChatMessageInput from './ChatMessageInput.jsx';
 

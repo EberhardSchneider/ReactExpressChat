@@ -115,8 +115,8 @@ class ChatView extends Component {
 
   render() {
     const roomName = this.state.selectedRoom ?
-      this.state.rooms[this.state.selectedRoom] :
-      null;
+      this.state.rooms[this.state.selectedRoom].name :
+      '';
     return (<div className="container">
       <div className="four columns">
         <div>

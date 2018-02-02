@@ -1,5 +1,5 @@
 import React from 'react';
-import helper from '../helpers/DataHelper';
+import helper from '../helpers/DataHelpers';
 
 class ChatMessageList extends React.Component {
   render() {
