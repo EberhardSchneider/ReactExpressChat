@@ -15,11 +15,16 @@ class ChatRoomList extends React.Component {
 
   //  TODO: differenciate ChatRoomSelector and ChatRoomList (stateless)
   render() {
+    const {
+      rooms,
+      selectedRoom
+    } = this.props;
 
-    return this.props.rooms ? (<div id="room-list">
+    return rooms ? (<div id="room-list">
       {
-        this.props.rooms.map((room) => {
-          const className = (room.id == this.props.selectedRoom)
+        // TODO: get selected room from object
+        Object.values(rooms).map((room) => {
+          const className = (room.id == selectedRoom)
             ? 'room-list-item active'
             : 'room-list-item';
           return <div key={room.id}

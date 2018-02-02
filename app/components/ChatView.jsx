@@ -36,8 +36,8 @@ class ChatView extends Component {
     // };
 
     this.state = {
-      users: [],
-      rooms: [],
+      users: {},
+      rooms: {},
       messages: this.messages,
       selectedRoom: undefined,
       joinedRoom: undefined

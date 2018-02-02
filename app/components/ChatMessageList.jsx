@@ -1,8 +1,14 @@
 import React from 'react';
+import helper from '../helpers/DataHelper';
 
 class ChatMessageList extends React.Component {
   render() {
-    const messages = this.props.messages;
+    const {
+      messages,
+      selectedRoom
+    } = this.props;
+
+
     return (<div id='chat-message-list'>
       {
         (messages.map((message) => {

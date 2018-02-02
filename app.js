@@ -114,8 +114,8 @@ app.use(function(err, req, res, next) {
 
 // web socket handling
 
-let users = [];
-let rooms = [];
+let users = {};
+let rooms = {};
 let userName = '';
 let roomId = '';
 
@@ -135,11 +135,10 @@ io.on('connection', (socket) => {
 
   socket.on('add user', (data) => {
     const newUser = {
-      id: socket.id,
       name: data.name,
       roomId: undefined
     };
-    users.push(newUser);
+    users[socket.id] = newUser;
     triggerUserUpdate(socket);
 
     userName = data.name;
@@ -148,10 +147,9 @@ io.on('connection', (socket) => {
   socket.on('add room', (data) => {
     const id = guid.raw();
     const newRoom = {
-      id: id,
       name: data.name
     };
-    rooms.push(newRoom);
+    rooms[id] = newRoom;
     triggerRoomUpdate(socket);
   });
 
@@ -167,20 +165,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('join room', (data) => {
-    let currentUser = users.filter((item) => {
-      return socket.id === item.id;
-    })[0];
-    console.log('Current User:');
-    console.log(currentUser);
-    const usersWithoutCurrent = users.filter((item) => {
-      return socket.id !== item.id;
-    });
-    users = usersWithoutCurrent;
-    currentUser.roomId = data.key;
-    console.log('Updated User:');
-    console.log(currentUser);
-    users.push(currentUser);
-    console.log(users);
+    users[socket.id].roomId = data.key;
     triggerUserUpdate(socket);
   });
 
