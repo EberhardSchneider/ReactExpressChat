@@ -11,17 +11,21 @@ const ChatMessageView = (props) => {
     socket
   } = props;
 
+  console.log('Before:');
+  console.log(messages);
   const showedMessages =
     helper.getMessagesFromRoomKey(messages, selectedRoom);
+  console.log('after');
+  console.log(showedMessages);
+  return (
+    <div id='chat-message-view' className={'two-thirds column'}>
+      <h4>{selectedRoomName}</h4>
 
-  return (<div id='chat-message-view' className={'two-thirds column'}>
-    <h4>{selectedRoomName}</h4>
+      <ChatMessageList messages={showedMessages}
+        selectedRoom={selectedRoom}/>
 
-    <ChatMessageList messages={showedMessages}
-      selectedRoom={selectedRoom}/>
-
-    <ChatMessageInput socket={props.socket}/>
-  </div>);
+      <ChatMessageInput socket={socket}/>
+    </div>);
 };
 
 module.exports = ChatMessageView;
