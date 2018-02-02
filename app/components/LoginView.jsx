@@ -13,7 +13,9 @@ class LoginView extends React.Component {
   }
 
   handleInputChange(e) {
-    this.setState({userName: e.target.value});
+    this.setState({
+      userName: e.target.value
+    });
   }
 
   handleSubmit(e) {
@@ -26,7 +28,11 @@ class LoginView extends React.Component {
       <div className="row">
         <form onSubmit={this.handleSubmit}>
           <h2>Pick a username:</h2>
-          <input className="eight columns" value={this.state.userName} onChange={this.handleInputChange} type="text"/>
+          <input className="eight columns"
+            value={this.state.userName}
+            onChange={this.handleInputChange}
+            type="text"
+            autoFocus={true}/>
           <button>Connect</button>
         </form>
 

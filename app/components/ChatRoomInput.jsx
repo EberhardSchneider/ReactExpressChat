@@ -37,6 +37,10 @@ class ChatRoomInput extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     this.props.addRoom(this.state.newRoomInput);
+    this.setState({
+      roomInputActive: false,
+      newRoomInput: ''
+    });
   }
 
   render() {
@@ -51,7 +55,8 @@ class ChatRoomInput extends React.Component {
         <input type="text"
           className="u-full-width"
           value={this.state.newRoomInput}
-          onChange={this.handleInputChange}/>
+          onChange={this.handleInputChange}
+          autoFocus={true}/>
       </form> : null }
     </div>);
   }
