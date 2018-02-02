@@ -159,8 +159,8 @@ io.on('connection', (socket) => {
       roomId: roomId,
       body: data.message
     };
-    socket.broadcast.emit('messages updated', message);
-    socket.emit('messages updated', message);
+    socket.broadcast.emit('new message', message);
+    socket.emit('new message', message);
   });
 
   socket.on('join room', (data) => {

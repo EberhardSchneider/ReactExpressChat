@@ -1,5 +1,4 @@
 import React from 'react';
-import helper from '../helpers/DataHelpers';
 import ChatMessageList from './ChatMessageList.jsx';
 import ChatMessageInput from './ChatMessageInput.jsx';
 
@@ -8,20 +7,18 @@ const ChatMessageView = (props) => {
     messages,
     selectedRoomName,
     selectedRoom,
+    users,
     socket
   } = props;
 
-  console.log('Before:');
-  console.log(messages);
-  const showedMessages =
-    helper.getMessagesFromRoomKey(messages, selectedRoom);
-  console.log('after');
-  console.log(showedMessages);
+
+
   return (
     <div id='chat-message-view' className={'two-thirds column'}>
       <h4>{selectedRoomName}</h4>
 
-      <ChatMessageList messages={showedMessages}
+      <ChatMessageList messages={messages}
+        users={users}
         selectedRoom={selectedRoom}/>
 
       <ChatMessageInput socket={socket}/>

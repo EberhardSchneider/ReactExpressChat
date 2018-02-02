@@ -7,7 +7,6 @@ import ChatRoomView from './ChatRoomView.jsx';
 
 import ChatMessageView from './ChatMessageView.jsx';
 
-import guid from 'guid';
 import helper from '../helpers/RestHelper.js';
 
 class ChatView extends Component {
@@ -76,11 +75,7 @@ class ChatView extends Component {
     });
 
     props.socket.on('new message', (data) => {
-      const message = {
-        id: guid.raw(),
-        author: data.user,
-        body: data.message
-      };
+      const message = data;
       let messages = this.state.messages;
       messages.push(message);
       this.setState({
@@ -137,6 +132,7 @@ class ChatView extends Component {
         <ChatMessageView messages={this.state.messages}
           selectedRoomName={roomName}
           selectedRoom={this.state.selectedRoom}
+          users={this.state.users}
           socket={this.props.socket}/>
       </div>
     </div>);
