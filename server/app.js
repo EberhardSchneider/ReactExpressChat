@@ -1,12 +1,9 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
-
-const guid = require('guid');
 
 var index = require('./routes/index');
 var app = express();
@@ -85,6 +82,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 
+
 app.use('/users', (req, res) => {
   res.send(users);
 });
@@ -92,6 +90,7 @@ app.use('/users', (req, res) => {
 app.use('/rooms', (req, res) => {
   res.send(rooms);
 });
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -114,90 +113,101 @@ app.use(function(err, req, res) {
 
 // web socket handling
 
+
 let users = {};
 let rooms = {};
-let roomId = undefined;
 
-/**
-users: {
-  socket.id: {
-    name: String
-    room: String of room id
-  }
-}
-**/
-
-var io = require('socket.io')(server);
-
-io.on('connection', (socket) => {
-  console.log('Connection started...');
-
-  socket.on('add user', (data) => {
-    const newUser = {
-      name: data.name,
-      roomId: undefined
-    };
-    users[socket.id] = newUser;
-    triggerUserUpdate(socket);
-  });
-
-  socket.on('add room', (data) => {
-    const newRoom = {
-      name: data.name
-    };
-    rooms[guid.raw()] = newRoom;
-    triggerRoomUpdate(socket);
-  });
-
-  socket.on('new message', (data) => {
-    const message = {
-      id: guid.raw(),
-      userId: socket.id,
-      roomId: roomId,
-      body: data.message
-    };
-    socket.broadcast.emit('new message', message);
-    socket.emit('new message', message);
-  });
-
-  socket.on('join room', (data) => {
-    users[socket.id].roomId = data.key;
-    roomId = data.key;
-    triggerUserUpdate(socket);
-  });
-
-  socket.on('disconnecting', () => {
-    delete users[socket.id];
-    socket.broadcast.emit('users updated', {
-      users: users
-    });
-
-    triggerUserUpdate(socket);
+require('./chatSockets')(server, users, rooms);
 
 
-  });
-
-});
-
-// ____________________________________________________________
-
-
-function triggerUserUpdate(socket) {
-  socket.broadcast.emit('users updated', {
-    users: users
-  });
-  socket.emit('users updated', {
-    users: users
-  });
-}
-
-function triggerRoomUpdate(socket) {
-  socket.broadcast.emit('rooms updated', {
-    rooms: rooms
-  });
-  socket.emit('rooms updated', {
-    rooms: rooms
-  });
-}
+// /**
+// users: {
+//   socket.id: {
+//     name: String
+//     room: String of room id
+//   }
+// }
+// **/
+//
+// var io = require('socket.io')(server);
+//
+// app.use('/users', (req, res) => {
+//   res.send(users);
+// });
+//
+// app.use('/rooms', (req, res) => {
+//   res.send(rooms);
+// });
+//
+// io.on('connection', (socket) => {
+//   console.log('Connection started...');
+//
+//   socket.on('add user', (data) => {
+//     const newUser = {
+//       name: data.name,
+//       roomId: undefined
+//     };
+//     users[socket.id] = newUser;
+//     triggerUserUpdate(socket);
+//   });
+//
+//   socket.on('add room', (data) => {
+//     const newRoom = {
+//       name: data.name
+//     };
+//     rooms[guid.raw()] = newRoom;
+//     triggerRoomUpdate(socket);
+//   });
+//
+//   socket.on('new message', (data) => {
+//     const message = {
+//       id: guid.raw(),
+//       userId: socket.id,
+//       roomId: roomId,
+//       body: data.message
+//     };
+//     socket.broadcast.emit('new message', message);
+//     socket.emit('new message', message);
+//   });
+//
+//   socket.on('join room', (data) => {
+//     users[socket.id].roomId = data.key;
+//     roomId = data.key;
+//     triggerUserUpdate(socket);
+//   });
+//
+//   socket.on('disconnecting', () => {
+//     delete users[socket.id];
+//     socket.broadcast.emit('users updated', {
+//       users: users
+//     });
+//
+//     triggerUserUpdate(socket);
+//
+//
+//   });
+//
+// });
+//
+// // ____________________________________________________________
+//
+//
+// function triggerUserUpdate(socket) {
+//   socket.broadcast.emit('users updated', {
+//     users: users
+//   });
+//   socket.emit('users updated', {
+//     users: users
+//   });
+// }
+//
+// function triggerRoomUpdate(socket) {
+//   socket.broadcast.emit('rooms updated', {
+//     rooms: rooms
+//   });
+//   socket.emit('rooms updated', {
+//     rooms: rooms
+//   });
+// }
 
 module.exports = app;
