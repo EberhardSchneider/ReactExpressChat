@@ -1,9 +1,24 @@
 var express = require('express');
 var path = require('path');
+
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
+
+require('./database.js');
+const User = require('./models/User.js');
+const Room = require('./models/Room.js');
+
+console.log('Check mongodb');
+const newUser = new User({
+  id: '1',
+  name: 'Eberhard',
+  roomId: '1'
+});
+
+newUser.save((err, u) => {});
+
 
 var index = require('./routes/index');
 var app = express();
@@ -12,27 +27,15 @@ var app = express();
 
 var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
-
 var port = process.env.PORT || '3000';
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
 var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
 server.listen(port);
 
 
-// webpack setup
+// webpack setup ____________________________________________________________
+
 
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
@@ -55,13 +58,11 @@ app.use(require('webpack-hot-middleware')(compiler, {
   heartbeat: 10 * 1000
 }));
 
-// --------------------------------------------------
+// view engine setup ____________________________________________________________
 
-// view engine setup
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -75,8 +76,8 @@ app.use(sassMiddleware({
   indentedSyntax: true, // true = .sass and false = .scss
   sourceMap: true
 }));
+// routes ____________________________________________________________
 
-// ____________________________________________________________ ROUTES
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -111,13 +112,14 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-// web socket handling
+// web socket handling ____________________________________________________________
 
 
 let users = {};
 let rooms = {};
 
 require('./chatSockets')(server, users, rooms);
+
 
 
 // /**
