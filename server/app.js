@@ -38,7 +38,7 @@ server.listen(port);
 // webpack setup
 
 const webpack = require('webpack');
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('../webpack.config.js');
 
 const compiler = webpack(webpackConfig);
 
@@ -61,7 +61,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
 // --------------------------------------------------
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
@@ -85,11 +85,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 
-app.use('/users', (req, res, next) => {
+app.use('/users', (req, res) => {
   res.send(users);
 });
 
-app.use('/rooms', (req, res, next) => {
+app.use('/rooms', (req, res) => {
   res.send(rooms);
 });
 
@@ -101,7 +101,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ?
@@ -116,8 +116,7 @@ app.use(function(err, req, res, next) {
 
 let users = {};
 let rooms = {};
-let userName;
-let roomId = '';
+let roomId = undefined;
 
 /**
 users: {
@@ -140,8 +139,6 @@ io.on('connection', (socket) => {
     };
     users[socket.id] = newUser;
     triggerUserUpdate(socket);
-
-    userName = data.name;
   });
 
   socket.on('add room', (data) => {
@@ -169,7 +166,7 @@ io.on('connection', (socket) => {
     triggerUserUpdate(socket);
   });
 
-  socket.on('disconnecting', (reason) => {
+  socket.on('disconnecting', () => {
     delete users[socket.id];
     socket.broadcast.emit('users updated', {
       users: users
@@ -181,6 +178,9 @@ io.on('connection', (socket) => {
   });
 
 });
+
+// ____________________________________________________________
+
 
 function triggerUserUpdate(socket) {
   socket.broadcast.emit('users updated', {

@@ -11,11 +11,11 @@ const ChatMessageView = (props) => {
     socket
   } = props;
 
-
+  const title = selectedRoomName || 'Lobby';
 
   return (
     <div id='chat-message-view' className={'two-thirds column'}>
-      <h4>{selectedRoomName}</h4>
+      <h4>{title}</h4>
 
       <ChatMessageList messages={messages}
         users={users}

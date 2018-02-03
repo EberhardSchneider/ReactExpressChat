@@ -14,41 +14,23 @@ class ChatView extends Component {
   constructor(props) {
     super(props);
 
-    this.messages = [
-      // {
-      //   id: 'a',
-      //   author: 'Ebi',
-      //   body: 'Whats Up?'
-      // }
-    ];
-
-    // this.rooms = {
-    //   'A': {
-    //     name: 'Roter Salon'
-    //   },
-    //   'B': {
-    //     name: 'Grüner  Salon'
-    //   },
-    //   'C': {
-    //     name: 'Beiger Salon'
-    //   }
-    // };
 
     this.state = {
       users: {},
       rooms: {},
-      messages: this.messages,
+      messages: [],
       selectedRoom: undefined,
       joinedRoom: undefined
     };
 
-    helper.get('/users').then((data) => {
-      console.log('Users from server: ');
-      console.log(data.users);
-      this.setState({
-        users: data.users
+
+    helper.get('/users')
+      .then((data) => {
+        this.setState({
+          users: data.users
+        });
       });
-    });
+
 
     helper.get('/rooms')
       .then((data) => {
@@ -62,7 +44,6 @@ class ChatView extends Component {
 
     this.props.socket.on('users updated', (data) => {
       const users = data.users;
-      console.log(users);
       this.setState({
         users: users
       });
@@ -81,7 +62,6 @@ class ChatView extends Component {
       this.setState({
         messages: messages
       });
-      console.log(messages);
 
     });
 

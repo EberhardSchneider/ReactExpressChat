@@ -22,7 +22,6 @@ class ChatRoomList extends React.Component {
 
     return rooms ? (<div id="room-list">
       {
-        // TODO: get selected room from object
         Object.entries(rooms).map((entry) => {
           const id = entry[0];
           const room = entry[1];
@@ -36,7 +35,7 @@ class ChatRoomList extends React.Component {
           </div>;
         })
       }
-    </div>) : null;
+    </div>) : <div>No room created yet.</div>;
   }
 }
 

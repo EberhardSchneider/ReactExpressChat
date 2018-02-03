@@ -11,6 +11,12 @@
     padding: 1em;
 }
 
+#room-list {
+  background-color: lightcyan;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
 #chat-message-view {
     height: 80vh;
     width: 100%;
