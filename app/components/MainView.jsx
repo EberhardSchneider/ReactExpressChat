@@ -15,14 +15,17 @@ class MainView extends React.Component {
     this.loginNewUser = this.loginNewUser.bind(this);
   }
 
-  loginNewUser(user) {
+  loginNewUser(userName) {
 
-    console.log('Logging in ' + user);
     this.socket = io();
 
-    this.socket.emit('add user', {
-      name: user
-    });
+    this.user = {
+      id: this.socket.id,
+      name: userName,
+      roomId: ''
+    };
+
+    this.socket.emit('add user', this.user);
 
     this.setState({
       socket: this.socket,
@@ -32,7 +35,9 @@ class MainView extends React.Component {
 
   render() {
     return this.state.loggedIn ?
-      <ChatView socket={this.state.socket}/> :
+      <ChatView
+        socket={this.state.socket}
+        user={this.user}/> :
       <LoginView loginNewUser={this.loginNewUser}/>;
   }
 }

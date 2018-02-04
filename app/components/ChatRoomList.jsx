@@ -10,7 +10,7 @@ class ChatRoomList extends React.Component {
   }
 
   handleClick(key) {
-    this.props.selectRoom(key);
+    this.props.actions.selectRoom(key);
   }
 
   //  TODO: differenciate ChatRoomSelector and ChatRoomList (stateless)

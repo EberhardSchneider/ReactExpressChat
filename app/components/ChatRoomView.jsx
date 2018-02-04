@@ -13,11 +13,10 @@ class ChatRoomView extends React.Component {
     return (<div id="chat-room-view">
       <h4>Rooms</h4>
       <ChatRoomList rooms={this.props.rooms}
-        selectRoom={this.props.selectRoom}
+        actions={this.props.actions}
         selectedRoom={this.props.selectedRoom}/>
       <ChatRoomInput socket={this.props.socket}
-        joinRoom={this.props.joinRoom}
-        addRoom={this.props.addRoom}/>
+        actions={this.props.actions}/>
     </div>);
   }
 

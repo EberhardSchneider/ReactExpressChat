@@ -15,11 +15,7 @@ function chatSockets(server, User, Room, Message) {
     console.log('Connection started...');
 
     socket.on('add user', (data) => {
-      const newUser = new User({
-        _id: socket.id,
-        name: data.name,
-        roomId: ''
-      });
+      const newUser = new User(data);
       newUser.save(() => {
         triggerUserUpdate(socket);
       });
@@ -28,10 +24,7 @@ function chatSockets(server, User, Room, Message) {
 
     socket.on('add room', (data) => {
       console.log('Adding room.');
-      const newRoom = new Room({
-        _id: guid.raw(),
-        name: data.name
-      });
+      const newRoom = new Room(data);
       newRoom.save((err) => {
         triggerRoomUpdate(socket);
       });
@@ -66,7 +59,7 @@ function chatSockets(server, User, Room, Message) {
         _id: socket.id
       }, {
         roomId: data.key
-      }, (err, item) => {
+      }, (err, ) => {
         if (err) {
           console.error('Could not update user for new room.');
           console.error(err);
@@ -100,18 +93,12 @@ function chatSockets(server, User, Room, Message) {
       socket.broadcast.emit('users updated', {
         users: doc
       });
-      socket.emit('users updated', {
-        users: doc
-      });
     });
   }
 
   function triggerRoomUpdate(socket) {
     Room.find((err, doc) => {
       socket.broadcast.emit('rooms updated', {
-        rooms: doc
-      });
-      socket.emit('rooms updated', {
         rooms: doc
       });
     });

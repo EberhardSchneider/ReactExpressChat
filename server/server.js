@@ -75,13 +75,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-app.use('/users', (req, res) => {
+app.get('/users', (req, res) => {
   User.find((err, doc) => {
     res.send(doc);
   });
 });
 
-app.use('/rooms', (req, res) => {
+app.get('/rooms', (req, res) => {
   Room.find((err, doc) => {
     res.send(doc);
   });
@@ -107,11 +107,6 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-// web socket handling ____________________________________________________________
-
 require('./chatSockets')(server, User, Room, Message);
-
-
-
 
 module.exports = app;

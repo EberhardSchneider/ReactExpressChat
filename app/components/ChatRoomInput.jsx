@@ -32,7 +32,7 @@ class ChatRoomInput extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.addRoom(this.state.newRoomInput);
+    this.props.actions.addRoom(this.state.newRoomInput);
 
     this.setState({
       roomInputActive: false,
