@@ -12,6 +12,7 @@ module.exports = {
     filename: 'app.js',
     publicPath: '/assets/',
   },
+
   module: {
     loaders: [{
         test: /\.jsx$/,
@@ -24,18 +25,17 @@ module.exports = {
             'es2015'
           ]
         }
-
       },
+
       {
         test: /\.css$/,
         loader: ['style-loader', 'css-loader']
       }
     ],
-
-
-
   },
+
   devtool: 'eval-source-map',
+
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
