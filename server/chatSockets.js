@@ -3,7 +3,7 @@ const guid = require('guid');
 
 // web socket handling
 
-function chatSockets(server, User, Room) {
+function chatSockets(server, User, Room, Message) {
 
   let roomId = undefined;
 
@@ -20,9 +20,10 @@ function chatSockets(server, User, Room) {
         name: data.name,
         roomId: ''
       });
-      newUser.save();
+      newUser.save(() => {
+        triggerUserUpdate(socket);
+      });
 
-      triggerUserUpdate(socket);
     });
 
     socket.on('add room', (data) => {
@@ -31,25 +32,36 @@ function chatSockets(server, User, Room) {
         _id: guid.raw(),
         name: data.name
       });
-      newRoom.save((err) => {});
-      triggerRoomUpdate(socket);
+      newRoom.save((err) => {
+        triggerRoomUpdate(socket);
+      });
+
     });
 
     socket.on('new message', (data) => {
-      const message = {
-        id: guid.raw(),
+      const message = new Message({
+        _id: guid.raw(),
         userId: socket.id,
-        roomId: roomId,
-        body: data.message
-      };
-      socket.broadcast.emit('new message', message);
-      socket.emit('new message', message);
+        roomId: socket.roomId,
+        body: data.message,
+        date: new Date()
+      });
+      message.save((err) => {
+        if (err) {
+          console.error('Could not store message:');
+          console.error(err);
+        }
+        socket.broadcast.emit('new message', message);
+        socket.emit('new message', message);
+      });
+
     });
 
     socket.on('join room', (data) => {
       // users[socket.id].roomId = data.key;
       // roomId = data.key;
-      console.log('joining room with key: ' + data.key);
+      // store roomId in socket
+      socket.roomId = data.key;
       User.findOneAndUpdate({
         _id: socket.id
       }, {
@@ -59,15 +71,24 @@ function chatSockets(server, User, Room) {
           console.error('Could not update user for new room.');
           console.error(err);
         }
+        triggerUserUpdate(socket);
       });
-      triggerUserUpdate(socket);
+
     });
 
     socket.on('disconnecting', () => {
-      User.remove({
-        _id: socket.id
-      });
-      triggerUserUpdate(socket);
+      User
+        .find({
+          _id: socket.id
+        })
+        .remove((err) => {
+          if (err) {
+            console.error('Could not delete user.');
+            console.error(err);
+          }
+          triggerUserUpdate(socket);
+        });
+
     });
   });
 
