@@ -15,7 +15,7 @@ class ChatMessageList extends React.Component {
     return (<div id='chat-message-list'>
       {
         (showedMessages.map((message) => {
-          return <div className="chat-message" key={message.id}>
+          return <div className="chat-message" key={message._id}>
             {users[message.userId].name}: {message.body}
           </div>;
         }))
