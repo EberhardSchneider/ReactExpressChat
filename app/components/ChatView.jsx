@@ -8,6 +8,7 @@ import ChatRoomView from './ChatRoomView.jsx';
 import ChatMessageView from './ChatMessageView.jsx';
 
 import helper from '../helpers/RestHelper.js';
+import dataHelper from '../helpers/DataHelpers.js';
 
 class ChatView extends Component {
 
@@ -19,7 +20,7 @@ class ChatView extends Component {
       users: {},
       rooms: {},
       messages: [],
-      selectedRoom: undefined,
+      selectedRoom: '',
       joinedRoom: undefined
     };
 
@@ -27,7 +28,7 @@ class ChatView extends Component {
     helper.get('/users')
       .then((data) => {
         this.setState({
-          users: data.users
+          users: dataHelper.mapFromObject(data.users)
         });
       });
 
@@ -35,7 +36,7 @@ class ChatView extends Component {
     helper.get('/rooms')
       .then((data) => {
         this.setState({
-          rooms: data
+          rooms: dataHelper.mapFromObject(data)
         });
       })
       .catch((error) => {
@@ -45,13 +46,13 @@ class ChatView extends Component {
     this.props.socket.on('users updated', (data) => {
       const users = data.users;
       this.setState({
-        users: users
+        users: dataHelper.mapFromObject(users)
       });
     });
 
     this.props.socket.on('rooms updated', (data) => {
       this.setState({
-        rooms: data.rooms
+        rooms: dataHelper.mapFromObject(data.rooms)
       });
     });
 

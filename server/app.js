@@ -10,14 +10,6 @@ require('./database.js');
 const User = require('./models/User.js');
 const Room = require('./models/Room.js');
 
-console.log('Check mongodb');
-const newUser = new User({
-  id: '1',
-  name: 'Eberhard',
-  roomId: '1'
-});
-
-newUser.save((err, u) => {});
 
 
 var index = require('./routes/index');
@@ -85,11 +77,15 @@ app.use('/', index);
 
 
 app.use('/users', (req, res) => {
-  res.send(users);
+  User.find((err, doc) => {
+    res.send(doc);
+  });
 });
 
 app.use('/rooms', (req, res) => {
-  res.send(rooms);
+  Room.find((err, doc) => {
+    res.send(doc);
+  });
 });
 
 
@@ -114,11 +110,7 @@ app.use(function(err, req, res) {
 
 // web socket handling ____________________________________________________________
 
-
-let users = {};
-let rooms = {};
-
-require('./chatSockets')(server, users, rooms);
+require('./chatSockets')(server, User, Room);
 
 
 

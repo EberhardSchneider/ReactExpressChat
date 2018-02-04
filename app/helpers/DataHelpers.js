@@ -1,4 +1,13 @@
-export default {
+const dataHelper = {
+  mapFromObject: function(object) {
+    if (object === undefined)
+      return undefined;
+    return object.reduce((acc, curr) => {
+      acc[curr._id] = curr;
+      return acc;
+    }, {});
+  },
+
   getMessagesFromRoomKey: function(messages, key) {
     let result = [];
     result = messages.filter((message) => {
@@ -32,3 +41,5 @@ export default {
     return result;
   },
 };
+
+module.exports = dataHelper;

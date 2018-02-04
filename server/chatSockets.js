@@ -3,7 +3,7 @@ const guid = require('guid');
 
 // web socket handling
 
-function chatSockets(server, users, rooms) {
+function chatSockets(server, User, Room) {
 
   let roomId = undefined;
 
@@ -15,19 +15,23 @@ function chatSockets(server, users, rooms) {
     console.log('Connection started...');
 
     socket.on('add user', (data) => {
-      const newUser = {
+      const newUser = new User({
+        _id: socket.id,
         name: data.name,
-        roomId: undefined
-      };
-      users[socket.id] = newUser;
+        roomId: ''
+      });
+      newUser.save();
+
       triggerUserUpdate(socket);
     });
 
     socket.on('add room', (data) => {
-      const newRoom = {
+      console.log('Adding room.');
+      const newRoom = new Room({
+        _id: guid.raw(),
         name: data.name
-      };
-      rooms[guid.raw()] = newRoom;
+      });
+      newRoom.save((err) => {});
       triggerRoomUpdate(socket);
     });
 
@@ -43,43 +47,53 @@ function chatSockets(server, users, rooms) {
     });
 
     socket.on('join room', (data) => {
-      users[socket.id].roomId = data.key;
-      roomId = data.key;
+      // users[socket.id].roomId = data.key;
+      // roomId = data.key;
+      console.log('joining room with key: ' + data.key);
+      User.findOneAndUpdate({
+        _id: socket.id
+      }, {
+        roomId: data.key
+      }, (err, item) => {
+        if (err) {
+          console.error('Could not update user for new room.');
+          console.error(err);
+        }
+      });
       triggerUserUpdate(socket);
     });
 
     socket.on('disconnecting', () => {
-      delete users[socket.id];
-      socket.broadcast.emit('users updated', {
-        users: users
+      User.remove({
+        _id: socket.id
       });
-
       triggerUserUpdate(socket);
-
-
     });
-
   });
 
 
   function triggerUserUpdate(socket) {
-    socket.broadcast.emit('users updated', {
-      users: users
-    });
-    socket.emit('users updated', {
-      users: users
+    console.log('Update:');
+    User.find((err, doc) => {
+      console.log(doc);
+      socket.broadcast.emit('users updated', {
+        users: doc
+      });
+      socket.emit('users updated', {
+        users: doc
+      });
     });
   }
 
   function triggerRoomUpdate(socket) {
-    socket.broadcast.emit('rooms updated', {
-      rooms: rooms
-    });
-    socket.emit('rooms updated', {
-      rooms: rooms
+    Room.find((err, doc) => {
+      socket.broadcast.emit('rooms updated', {
+        rooms: doc
+      });
+      socket.emit('rooms updated', {
+        rooms: doc
+      });
     });
   }
-
 }
-
 module.exports = chatSockets;

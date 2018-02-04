@@ -15,7 +15,7 @@ const ChatUserView = (props) => {
     <div id="user-names">
       { (showedUsers) ?
         showedUsers.map((user) => {
-          return (<div key={user.id}>{user.name}</div>);
+          return (<div key={user._id}>{user.name}</div>);
         }) : null
       }
     </div>

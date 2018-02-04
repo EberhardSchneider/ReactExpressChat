@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema({
-  id: String,
+  _id: String,
   name: String
 });
 
-const Room = mongoose.model('Room', roomSchema);
+const Room = mongoose.model('Room', roomSchema, 'rooms');
 
 module.exports = Room;
