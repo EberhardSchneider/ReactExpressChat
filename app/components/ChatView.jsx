@@ -18,10 +18,8 @@ class ChatView extends Component {
     super(props);
 
     const {
-      user
+      users
     } = props;
-    let users = {};
-    users[user.id] = user;
     this.state = {
       users: users,
       rooms: {},
@@ -32,11 +30,15 @@ class ChatView extends Component {
     this.roomActions = {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
-          this.setState({
-            selectedRoom: key
-          });
+          let {
+            users
+          } = this.state;
+          users[this.props.socket.id].roomId = key;
           this.props.socket.emit('join room', {
             key: key
+          });
+          this.setState({
+            selectedRoom: key
           });
         }
       },
@@ -47,6 +49,24 @@ class ChatView extends Component {
         });
       }
     };
+
+    this.messageViewActions = {
+      getRoomName: (room) => (
+        (this.state.rooms && this.state.rooms[room]) ? this.state.rooms[room].name : 'Lobby'
+      ),
+      getMessagesForRoom: (room) => (
+        dataHelper.getMessagesFromRoomKey(this.state.messages, room)
+      ),
+      emitMessage: (messageBody) => {
+        this.props.socket.emit('new message', {
+          message: messageBody
+        });
+      },
+      getUserNameById: (id) => (
+        this.state.users[id].name
+      )
+    };
+
 
 
     helper.get('/rooms')
@@ -60,9 +80,8 @@ class ChatView extends Component {
       });
 
     this.props.socket.on('users updated', (data) => {
-      const users = data.users;
       this.setState({
-        users: dataHelper.mapFromObject(users)
+        users: data
       });
     });
 
@@ -83,30 +102,11 @@ class ChatView extends Component {
 
   }
 
-  //
-  //
-  //
-  // selectRoom(key) {
-  //   if (key !== this.state.selectedRoom) {
-  //     this.setState({
-  //       selectedRoom: key
-  //     });
-  //     this.props.socket.emit('join room', {
-  //       key: key
-  //     });
-  //   }
-  // }
-  //
-  // addRoom(name) {
-  //   this.props.socket.emit('add room', {
-  //     name: name
-  //   });
-  // }
+
+
 
   render() {
-    const roomName = this.state.selectedRoom ?
-      this.state.rooms[this.state.selectedRoom].name :
-      '';
+
     return (<div className="container">
       <div className="four columns">
         <div>
@@ -122,11 +122,9 @@ class ChatView extends Component {
 
       </div>
       <div className="eight columns">
-        <ChatMessageView messages={this.state.messages}
-          selectedRoomName={roomName}
-          selectedRoom={this.state.selectedRoom}
-          users={this.state.users}
-          socket={this.props.socket}/>
+        <ChatMessageView
+          actions={this.messageViewActions}
+          selectedRoom={this.state.selectedRoom}/>
       </div>
     </div>);
   }

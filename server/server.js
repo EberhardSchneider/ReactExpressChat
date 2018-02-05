@@ -5,16 +5,8 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 
 require('./database.js');
-const User = require('./models/User.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
-
-// delete all former user data
-User.find({}).remove((err) => {
-  console.log('Deleted all users with error:');
-  console.log(err);
-});
-
 
 
 var index = require('./routes/index');
@@ -74,13 +66,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 
-
-app.get('/users', (req, res) => {
-  User.find((err, doc) => {
-    res.send(doc);
-  });
-});
-
 app.get('/rooms', (req, res) => {
   Room.find((err, doc) => {
     res.send(doc);
@@ -107,6 +92,6 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-require('./chatSockets')(server, User, Room, Message);
+require('./chatSockets')(server, Room, Message);
 
 module.exports = app;

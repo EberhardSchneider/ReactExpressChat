@@ -14,12 +14,17 @@ class ChatInputMessage extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.socket.emit('new message', {message: this.state.message});
-    this.setState({message: ''});
+    this.props.actions.emitMessage(this.state.message);
+    // this.props.socket.emit('new message', {message: this.state.message});
+    this.setState({
+      message: ''
+    });
   }
 
   handleInputChange(e) {
-    this.setState({message: e.target.value});
+    this.setState({
+      message: e.target.value
+    });
   }
   render() {
     return (<form onSubmit={this.handleSubmit} className="row">

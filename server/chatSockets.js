@@ -1,25 +1,22 @@
 const guid = require('guid');
 
+let loggedInUsers = {};
+
 
 // web socket handling
 
-function chatSockets(server, User, Room, Message) {
-
-  let roomId = undefined;
-
+function chatSockets(server, Room, Message) {
 
   var io = require('socket.io')(server);
 
-
   io.on('connection', (socket) => {
     console.log('Connection started...');
+    socket.roomId = '';
 
     socket.on('add user', (data) => {
-      const newUser = new User(data);
-      newUser.save(() => {
-        triggerUserUpdate(socket);
-      });
-
+      loggedInUsers[socket.id] = data;
+      socket.emit('user added', loggedInUsers);
+      triggerUserUpdate(socket);
     });
 
     socket.on('add room', (data) => {
@@ -54,46 +51,34 @@ function chatSockets(server, User, Room, Message) {
       // users[socket.id].roomId = data.key;
       // roomId = data.key;
       // store roomId in socket
+      // socket.roomId = data.key;
+      // User.findOneAndUpdate({
+      //   _id: socket.id
+      // }, {
+      //   roomId: data.key
+      // }, (err, ) => {
+      //   if (err) {
+      //     console.error('Could not update user for new room.');
+      //     console.error(err);
+      //   }
+      //   triggerUserUpdate(socket);
+      // });
+      loggedInUsers[socket.id].roomId = data.key;
       socket.roomId = data.key;
-      User.findOneAndUpdate({
-        _id: socket.id
-      }, {
-        roomId: data.key
-      }, (err, ) => {
-        if (err) {
-          console.error('Could not update user for new room.');
-          console.error(err);
-        }
-        triggerUserUpdate(socket);
-      });
+      triggerUserUpdate(socket);
 
     });
 
     socket.on('disconnecting', () => {
-      User
-        .find({
-          _id: socket.id
-        })
-        .remove((err) => {
-          if (err) {
-            console.error('Could not delete user.');
-            console.error(err);
-          }
-          triggerUserUpdate(socket);
-        });
-
+      delete loggedInUsers[socket.id];
+      triggerUserUpdate(socket);
     });
   });
 
 
   function triggerUserUpdate(socket) {
     console.log('Update:');
-    User.find((err, doc) => {
-      console.log(doc);
-      socket.broadcast.emit('users updated', {
-        users: doc
-      });
-    });
+    socket.broadcast.emit('users updated', loggedInUsers);
   }
 
   function triggerRoomUpdate(socket) {

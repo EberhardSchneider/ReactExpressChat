@@ -1,24 +1,23 @@
 import React from 'react';
-import helper from '../helpers/DataHelpers';
 
 class ChatMessageList extends React.Component {
   render() {
     const {
-      messages,
-      users,
+      actions,
       selectedRoom
     } = this.props;
 
-    const showedMessages =
-      helper.getMessagesFromRoomKey(messages, selectedRoom);
-
+    console.log('Filterd');
+    console.log(actions.getMessagesForRoom(selectedRoom));
     return (<div id='chat-message-list'>
       {
-        (showedMessages.map((message) => {
-          return <div className="chat-message" key={message._id}>
-            {users[message.userId].name}: {message.body}
-          </div>;
-        }))
+        (actions.getMessagesForRoom(selectedRoom)
+          .map((message) => {
+            const author = actions.getUserNameById(message.userId);
+            return <div className="chat-message" key={message._id}>
+              {author}: {message.body}
+            </div>;
+          }))
       }
     </div>);
   }
