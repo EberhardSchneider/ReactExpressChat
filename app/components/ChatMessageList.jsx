@@ -3,15 +3,12 @@ import React from 'react';
 class ChatMessageList extends React.Component {
   render() {
     const {
-      actions,
-      selectedRoom
+      actions
     } = this.props;
 
-    console.log('Filterd');
-    console.log(actions.getMessagesForRoom(selectedRoom));
     return (<div id='chat-message-list'>
       {
-        (actions.getMessagesForRoom(selectedRoom)
+        (actions.getMessages()
           .map((message) => {
             const author = actions.getUserNameById(message.userId);
             return <div className="chat-message" key={message._id}>

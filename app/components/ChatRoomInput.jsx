@@ -12,7 +12,6 @@ class ChatRoomInput extends React.Component {
     this.handleAddRoomClicked = this.handleAddRoomClicked.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
   }
 
 

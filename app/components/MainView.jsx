@@ -6,14 +6,18 @@ import ChatView from './ChatView.jsx';
 import LoginView from './LoginView.jsx';
 
 class MainView extends React.Component {
+
   constructor(props) {
+
     super(props);
+
     this.state = {
       loggedIn: false
     };
 
     this.loginNewUser = this.loginNewUser.bind(this);
   }
+
 
   loginNewUser(userName) {
 
@@ -26,12 +30,15 @@ class MainView extends React.Component {
     };
 
     this.socket.emit('add user', this.user);
+
     this.socket.on('user added', (users) => {
+
       this.setState({
         socket: this.socket,
         users: users,
         loggedIn: true
       });
+
     });
 
   }

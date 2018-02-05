@@ -12,14 +12,19 @@ import dataHelper from '../helpers/DataHelpers.js';
 
 import guid from 'guid';
 
+
+
 class ChatView extends Component {
 
   constructor(props) {
+
     super(props);
 
     const {
+      socket,
       users
     } = props;
+
     this.state = {
       users: users,
       rooms: {},
@@ -27,14 +32,14 @@ class ChatView extends Component {
       selectedRoom: ''
     };
 
-    this.roomActions = {
+    this.roomViewActions = {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
           let {
             users
           } = this.state;
-          users[this.props.socket.id].roomId = key;
-          this.props.socket.emit('join room', {
+          users[socket.id].roomId = key;
+          socket.emit('join room', {
             key: key
           });
           this.setState({
@@ -43,7 +48,7 @@ class ChatView extends Component {
         }
       },
       addRoom: name => {
-        this.props.socket.emit('add room', {
+        socket.emit('add room', {
           _id: guid.raw(),
           name: name
         });
@@ -51,14 +56,16 @@ class ChatView extends Component {
     };
 
     this.messageViewActions = {
-      getRoomName: (room) => (
-        (this.state.rooms && this.state.rooms[room]) ? this.state.rooms[room].name : 'Lobby'
+      getRoomName: () => (
+        (this.state.rooms && this.state.rooms[this.state.selectedRoom]) ?
+        this.state.rooms[this.state.selectedRoom].name :
+        'Lobby'
       ),
-      getMessagesForRoom: (room) => (
-        dataHelper.getMessagesFromRoomKey(this.state.messages, room)
+      getMessages: () => (
+        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.selectedRoom)
       ),
       emitMessage: (messageBody) => {
-        this.props.socket.emit('new message', {
+        socket.emit('new message', {
           message: messageBody
         });
       },
@@ -79,19 +86,19 @@ class ChatView extends Component {
         console.log('Error getting room data:' + error);
       });
 
-    this.props.socket.on('users updated', (data) => {
+    socket.on('users updated', (data) => {
       this.setState({
         users: data
       });
     });
 
-    this.props.socket.on('rooms updated', (data) => {
+    socket.on('rooms updated', (data) => {
       this.setState({
         rooms: dataHelper.mapFromObject(data.rooms)
       });
     });
 
-    props.socket.on('new message', (data) => {
+    socket.on('new message', (data) => {
       const message = data;
       let messages = this.state.messages;
       messages.push(message);
@@ -101,8 +108,6 @@ class ChatView extends Component {
     });
 
   }
-
-
 
 
   render() {
@@ -116,15 +121,13 @@ class ChatView extends Component {
         <div>
           <ChatRoomView rooms={this.state.rooms}
             users={this.state.users}
-            actions={this.roomActions}
-            selectedRoom={this.state.selectedRoom}/>
+            actions={this.roomViewActions}/>
         </div>
 
       </div>
       <div className="eight columns">
         <ChatMessageView
-          actions={this.messageViewActions}
-          selectedRoom={this.state.selectedRoom}/>
+          actions={this.messageViewActions}/>
       </div>
     </div>);
   }

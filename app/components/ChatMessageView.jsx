@@ -4,20 +4,17 @@ import ChatMessageInput from './ChatMessageInput.jsx';
 
 const ChatMessageView = (props) => {
   const {
-    selectedRoom,
-    actions,
-    socket
+    actions
   } = props;
 
-  const title = actions.getRoomName(selectedRoom);
+  const title = actions.getRoomName();
 
   return (
     <div id='chat-message-view' className={'two-thirds column'}>
       <h4>{title}</h4>
 
       <ChatMessageList
-        actions={actions}
-        selectedRoom={selectedRoom}/>
+        actions={actions}/>
 
       <ChatMessageInput
         actions={actions}/>

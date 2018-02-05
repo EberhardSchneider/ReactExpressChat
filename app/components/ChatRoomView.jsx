@@ -15,7 +15,7 @@ class ChatRoomView extends React.Component {
       <ChatRoomList rooms={this.props.rooms}
         actions={this.props.actions}
         selectedRoom={this.props.selectedRoom}/>
-      <ChatRoomInput socket={this.props.socket}
+      <ChatRoomInput 
         actions={this.props.actions}/>
     </div>);
   }
