@@ -23,9 +23,11 @@ function chatSockets(server, Room, Message) {
       console.log('Adding room.');
       const newRoom = new Room(data);
       newRoom.save((err) => {
-        triggerRoomUpdate(socket);
+        if (err) {
+          console.log('Could not store added room.');
+        } else
+          triggerRoomUpdate(socket);
       });
-
     });
 
     socket.on('new message', (data) => {
@@ -48,21 +50,6 @@ function chatSockets(server, Room, Message) {
     });
 
     socket.on('join room', (data) => {
-      // users[socket.id].roomId = data.key;
-      // roomId = data.key;
-      // store roomId in socket
-      // socket.roomId = data.key;
-      // User.findOneAndUpdate({
-      //   _id: socket.id
-      // }, {
-      //   roomId: data.key
-      // }, (err, ) => {
-      //   if (err) {
-      //     console.error('Could not update user for new room.');
-      //     console.error(err);
-      //   }
-      //   triggerUserUpdate(socket);
-      // });
       loggedInUsers[socket.id].roomId = data.key;
       socket.roomId = data.key;
       triggerUserUpdate(socket);
@@ -77,12 +64,13 @@ function chatSockets(server, Room, Message) {
 
 
   function triggerUserUpdate(socket) {
-    console.log('Update:');
     socket.broadcast.emit('users updated', loggedInUsers);
   }
 
   function triggerRoomUpdate(socket) {
     Room.find((err, doc) => {
+      console.log('Rooms from Mongo:');
+      console.log(doc);
       socket.broadcast.emit('rooms updated', {
         rooms: doc
       });
