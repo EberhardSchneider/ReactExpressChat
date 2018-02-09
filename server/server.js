@@ -3,6 +3,7 @@ var path = require('path');
 
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+var passport = require('passport');
 
 require('./database.js');
 const Room = require('./models/Room.js');
@@ -13,18 +14,14 @@ var index = require('./routes/index');
 var app = express();
 
 // server setup from bin/www
-
 var http = require('http');
-
 var port = process.env.PORT || '3000';
 app.set('port', port);
-
 var server = http.createServer(app);
 server.listen(port);
 
 
 // webpack setup ____________________________________________________________
-
 
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
@@ -47,7 +44,8 @@ app.use(require('webpack-hot-middleware')(compiler, {
   heartbeat: 10 * 1000
 }));
 
-// view engine setup ____________________________________________________________
+
+// views setup ____________________________________________________________
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
@@ -59,10 +57,9 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+
 // routes ____________________________________________________________
 
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 
