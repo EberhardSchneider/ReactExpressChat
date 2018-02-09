@@ -72,6 +72,7 @@ app.get('/rooms', (req, res) => {
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  console.table(req);
   var err = new Error('Not Found');
   err.status = 404;
   next(err);

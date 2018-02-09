@@ -48,10 +48,20 @@ class ChatView extends Component {
         }
       },
       addRoom: name => {
-        socket.emit('add room', {
+        const newRoom = {
           _id: guid.raw(),
           name: name
-        });
+        };
+        // to the server
+        socket.emit('add room', newRoom);
+
+        // update state/gui
+        let rooms = this.state.rooms;
+        rooms[newRoom._id] = newRoom;
+        this.setState(() => ({
+          rooms: rooms
+        }));
+
       }
     };
 
