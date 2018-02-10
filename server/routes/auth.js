@@ -2,7 +2,7 @@ var express = require('express');
 var authRouter = express.Router();
 
 authRouter.post('/signIn', function(req, res) {
-  res.send(req.body);
+  res.send('<h1>Sign In</h1>');
 });
 
 authRouter.post('/signUp', function(req, res) {
