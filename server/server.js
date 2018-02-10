@@ -3,14 +3,21 @@ var path = require('path');
 
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var passport = require('passport');
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
+
+const authRouter = require('./routes/auth');
 
 require('./database.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
+const Users = {
+  'Ebi': 'ebi',
+  'Stefan': 'stefan',
+  'Roman': 'roman'
+}; // fake data
 
 
-var index = require('./routes/index');
 var app = express();
 
 // server setup from bin/www
@@ -57,17 +64,39 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use('/Auth', authRouter);
 
 // routes ____________________________________________________________
 
 
-app.use('/', index);
+
+app.get('/', ((req, res) => {
+  if (!req.user) {
+    res.redirect('/login');
+  } else {
+    res.render('index');
+  }
+}));
 
 app.get('/rooms', (req, res) => {
   Room.find((err, doc) => {
     res.send(doc);
   });
 });
+
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.post('/login', ((req, res) => {
+  if (req.body.username == 'Ebi' && req.body.password == 'Ebi') {
+    req.session.username = 'Ebi';
+    res.redirect('/');
+  } else {
+    res.redirect('/login');
+  }
+}));
+
 
 
 // catch 404 and forward to error handler

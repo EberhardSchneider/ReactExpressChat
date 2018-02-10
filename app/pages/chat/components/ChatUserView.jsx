@@ -1,5 +1,5 @@
 import React from 'react';
-import helper from '../helpers/DataHelpers';
+import helper from '../../../helpers/DataHelpers';
 
 const ChatUserView = (props) => {
   const {

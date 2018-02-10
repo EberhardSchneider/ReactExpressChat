@@ -7,8 +7,8 @@ import ChatRoomView from './ChatRoomView.jsx';
 
 import ChatMessageView from './ChatMessageView.jsx';
 
-import helper from '../helpers/RestHelper.js';
-import dataHelper from '../helpers/DataHelpers.js';
+import helper from '../../../helpers/RestHelper.js';
+import dataHelper from '../../../helpers/DataHelpers.js';
 
 import guid from 'guid';
 

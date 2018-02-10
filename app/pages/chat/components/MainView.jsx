@@ -3,7 +3,6 @@ import React from 'react';
 import io from 'socket.io-client';
 
 import ChatView from './ChatView.jsx';
-import LoginView from './LoginView.jsx';
 
 class MainView extends React.Component {
 
@@ -44,11 +43,9 @@ class MainView extends React.Component {
   }
 
   render() {
-    return this.state.loggedIn ?
-      <ChatView
-        socket={this.state.socket}
-        users={this.state.users}/> :
-      <LoginView loginNewUser={this.loginNewUser}/>;
+    return <ChatView
+      socket={this.state.socket}
+      users={this.state.users}/>;
   }
 }
 

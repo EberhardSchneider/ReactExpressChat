@@ -20,7 +20,6 @@ function chatSockets(server, Room, Message) {
     });
 
     socket.on('add room', (data) => {
-      console.log('Adding room.');
       const newRoom = new Room(data);
       newRoom.save((err) => {
         if (err) {

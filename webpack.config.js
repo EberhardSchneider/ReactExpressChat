@@ -4,12 +4,13 @@ const webpack = require('webpack');
 module.exports = {
   watch: true,
   context: path.join(__dirname, 'app'),
-  entry: [
-    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-    './app.jsx'
-  ],
+  entry: {
+    webpack: 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+    app: './pages/chat/app.jsx',
+    login: './pages/login/login.jsx'
+  },
   output: {
-    filename: 'app.js',
+    filename: '[name].js',
     publicPath: '/assets/',
   },
 
