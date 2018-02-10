@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 
 class LoginView extends React.Component {
   constructor(props) {
@@ -10,20 +9,24 @@ class LoginView extends React.Component {
 
   render() {
     return (<div id="login-view" className="container center">
-      <div className="row">
-        <form action="/Auth/signIn" method="post">
-          <h2>Username:</h2>
-          <input className="eight columns"
+      <form action="/Auth/signIn" method="post">
+        <div className="row">
+          <label htmlFor="username">Username:</label>
+          <input className="four columns"
             name="username"
+            id="username"
             type="text"
             autoFocus={true}/>
-          <h2>Password:</h2>
-          <input className="eight columns"
+        </div>
+        <div className="row">
+          <label htmlFor="password">Password:</label>
+          <input className="four columns"
             name="password"
+            id="password"
             type="password"/>
-          <button>Send</button>
-        </form>
-      </div>
+        </div>
+        <button>Send</button>
+      </form>
     </div>);
   }
 }
