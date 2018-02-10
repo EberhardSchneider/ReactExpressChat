@@ -75,11 +75,9 @@ app.use(bodyParser.urlencoded({
 app.use('/auth', authRouter);
 
 app.get('/', ((req, res) => {
-  if (!req.user) {
+  if (!req.session.user) {
     res.render('login', {
-      message: 'Hallo'
-    }, (err, html) => {
-      res.send(html);
+      message: req.session.message
     });
   } else {
     res.render('index');
@@ -93,7 +91,12 @@ app.get('/rooms', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('login');
+  console.log('after redirect');
+  console.log(req.session.id);
+
+  res.render('login', {
+    message: req.session.message
+  });
 });
 
 app.post('/login', ((req, res) => {
