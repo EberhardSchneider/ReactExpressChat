@@ -9,9 +9,10 @@ class LoginView extends React.Component {
 
   render() {
     return (<div id="login-view" className="container center">
+      <div className='message'>{this.props.message}</div>
       <div className="six columns u-pull-left">
         <h2>LOGIN</h2>
-        <form action="/Auth/signIn" method="post">
+        <form action="/auth/login" method="post">
           <div className="row">
             <label htmlFor="username">Username:</label>
             <input className="u-full-width"
@@ -33,7 +34,7 @@ class LoginView extends React.Component {
       </div>
       <div className="six columns">
         <h2>REGISTER</h2>
-        <form action="/Auth/signUp" method="post">
+        <form action="/auth/register" method="post">
           <div className="row">
             <label htmlFor="username">Username</label>
             <input className="u-full-width"

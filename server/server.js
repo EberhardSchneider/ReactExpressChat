@@ -3,17 +3,14 @@ var path = require('path');
 
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+const session = require('express-session');
 
 const authRouter = require('./routes/auth');
 
 require('./database.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
-const Users = {
-  'Ebi': 'ebi',
-  'Stefan': 'stefan',
-  'Roman': 'roman'
-}; // fake data
+
 
 
 var app = express();
@@ -25,6 +22,16 @@ app.set('port', port);
 var server = http.createServer(app);
 server.listen(port);
 
+// session setup ____________________________________________________________
+
+app.use(session({
+  secret: 'asdlkj4ljlkdf',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: true
+  }
+}));
 
 // webpack setup ____________________________________________________________
 
@@ -62,15 +69,18 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
-app.use('/Auth', authRouter);
 
 // routes ____________________________________________________________
 
-
+app.use('/auth', authRouter);
 
 app.get('/', ((req, res) => {
   if (!req.user) {
-    res.redirect('/login');
+    res.render('login', {
+      message: 'Hallo'
+    }, (err, html) => {
+      res.send(html);
+    });
   } else {
     res.render('index');
   }

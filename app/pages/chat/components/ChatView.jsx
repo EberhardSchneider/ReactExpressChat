@@ -88,24 +88,30 @@ class ChatView extends Component {
 
     helper.get('/rooms')
       .then((data) => {
-        this.setState({
-          rooms: dataHelper.mapFromObject(data)
-        });
+        if (data) {
+          this.setState({
+            rooms: dataHelper.mapFromObject(data)
+          });
+        }
       })
       .catch((error) => {
         console.log('Error getting room data:' + error);
       });
 
     socket.on('users updated', (data) => {
-      this.setState({
-        users: data
-      });
+      if (data) {
+        this.setState({
+          users: data
+        });
+      }
     });
 
     socket.on('rooms updated', (data) => {
-      this.setState({
-        rooms: dataHelper.mapFromObject(data.rooms)
-      });
+      if (data) {
+        this.setState({
+          rooms: dataHelper.mapFromObject(data.rooms)
+        });
+      }
     });
 
     socket.on('new message', (data) => {
