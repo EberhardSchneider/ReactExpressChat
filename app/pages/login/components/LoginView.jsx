@@ -1,11 +1,10 @@
 import React from 'react';
 
+
 class LoginView extends React.Component {
   constructor(props) {
     super(props);
   }
-
-
 
   render() {
     return (<div id="login-view" className="container center">

@@ -2,9 +2,13 @@ import 'skeleton-css-webpack';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../../styles/main.css';
-import ChatView from './components/ChatView.jsx';
+import ChatViewController from './components/ChatViewController.jsx';
 
-ReactDOM.render(<ChatView user={user}/>, document.getElementById('app'));
+// user is set in server/views/index.ejs
+ReactDOM.render(
+  <ChatViewController user={user}/>,
+  document.getElementById('app')
+);
 
 if (module.hot) {
   module.hot.accept();

@@ -2,30 +2,27 @@ import React, {
   Component
 } from 'react';
 
-import ChatUserView from './ChatUserView.jsx';
-import ChatRoomView from './ChatRoomView.jsx';
-
-import ChatMessageView from './ChatMessageView.jsx';
 import io from 'socket.io-client';
-
-import helper from '../../../helpers/RestHelper.js';
-import dataHelper from '../../../helpers/DataHelpers.js';
-
 import guid from 'guid';
 
+import restHelper from '../../../helpers/RestHelper.js';
+import dataHelper from '../../../helpers/DataHelpers.js';
+
+import ChatUserView from './ChatUserView.jsx';
+import ChatRoomView from './ChatRoomView.jsx';
+import ChatMessageView from './ChatMessageView.jsx';
 
 
-class ChatView extends Component {
+class ChatViewController extends Component {
 
   constructor(props) {
-
     super(props);
 
-
+    // this is to show the logged in user
+    // before socket.io sends list of all users async
     let {
       user
     } = this.props;
-
     user.roomId = '';
     let users = {};
     users[this.props.user._id] = user;
@@ -38,82 +35,12 @@ class ChatView extends Component {
       localUserId: this.props.user._id
     };
 
-
-
-
-
     const socket = io();
 
     socket.emit('add user', user);
 
-    socket.on('user added', (users) => {
-      this.setState({
-        socket: socket,
-        users: users,
-      });
-
-    });
-
-
-
-
-    this.roomViewActions = {
-      selectRoom: key => {
-        if (key !== this.state.selectedRoom) {
-          let users = this.state.users;
-          users[this.state.localUserId].roomId = key;
-          socket.emit('join room', {
-            key: key
-          });
-          this.setState({
-            users,
-            selectedRoom: key
-          });
-        }
-      },
-      addRoom: name => {
-        const newRoom = {
-          _id: guid.raw(),
-          name: name
-        };
-        // to the server
-        socket.emit('add room', newRoom);
-
-        // update state/gui
-        let rooms = this.state.rooms;
-        rooms[newRoom._id] = newRoom;
-        this.setState(() => ({
-          rooms: rooms
-        }));
-
-      }
-    };
-
-    this.messageViewActions = {
-      getRoomName: () => (
-        (this.state.rooms && this.state.rooms[this.state.selectedRoom]) ?
-        this.state.rooms[this.state.selectedRoom].name :
-        'Lobby'
-      ),
-      getMessages: () => (
-        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.selectedRoom)
-      ),
-      emitMessage: (messageBody) => {
-        socket.emit('new message', {
-          message: messageBody
-        });
-      },
-      getUserNameById: (id) => (
-        this.state.users[id].name
-      ),
-      getCurrentUserName: () => (
-        this.state.users[this.state.localUserID].name
-      )
-    };
-
-
-
-    helper.get('/rooms')
+    // get roomViewActions
+    restHelper.get('/rooms')
       .then((data) => {
         if (data) {
           this.setState({
@@ -124,6 +51,14 @@ class ChatView extends Component {
       .catch((error) => {
         console.log('Error getting room data:' + error);
       });
+
+    // socket events
+    socket.on('user added', (users) => {
+      this.setState({
+        socket: socket,
+        users: users,
+      });
+    });
 
     socket.on('users updated', (data) => {
       if (data) {
@@ -150,11 +85,67 @@ class ChatView extends Component {
       });
     });
 
-  }
+
+    // callbacks for ChatRoomInput
+    this.roomViewActions = {
+      selectRoom: key => {
+        if (key !== this.state.selectedRoom) {
+          let users = this.state.users;
+          users[this.state.localUserId].roomId = key;
+          socket.emit('join room', {
+            key: key
+          });
+          this.setState({
+            users,
+            selectedRoom: key
+          });
+        }
+      },
+
+      addRoom: name => {
+        const newRoom = {
+          _id: guid.raw(),
+          name: name
+        };
+
+        socket.emit('add room', newRoom);
+
+        // update state/gui directly
+        // so we don't have to wait for the socket connection
+        let rooms = this.state.rooms;
+        rooms[newRoom._id] = newRoom;
+        this.setState(() => ({
+          rooms: rooms
+        }));
+      }
+    };
+
+    // callbacks for MessageView, MessageViewList, MessageInput
+    this.messageViewActions = {
+      getRoomName: () => (
+        (this.state.rooms && this.state.rooms[this.state.selectedRoom]) ?
+        this.state.rooms[this.state.selectedRoom].name :
+        'Lobby'
+      ),
+      getMessages: () => (
+        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.selectedRoom)
+      ),
+      emitMessage: (messageBody) => {
+        socket.emit('new message', {
+          message: messageBody
+        });
+      },
+      getUserNameById: (id) => (
+        this.state.users[id].name
+      ),
+      getCurrentUserName: () => (
+        this.state.users[this.state.localUserID].name
+      )
+    };
+  } // constructor
 
 
   render() {
-
     const View = () =>
       (<div className="container">
         <div className="four columns">
@@ -179,4 +170,4 @@ class ChatView extends Component {
   }
 }
 
-module.exports = ChatView;
+module.exports = ChatViewController;

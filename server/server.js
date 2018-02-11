@@ -1,19 +1,21 @@
 var express = require('express');
 var path = require('path');
 
+//standard middleware
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 const session = require('express-session');
 
-
-
+// mongoose
 require('./database.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
 const User = require('./models/User.js');
 
-
+// routes
 const authRouter = require('./routes/auth')(User);
+
+// ____________________________________________________________
 
 var app = express();
 
@@ -31,7 +33,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   cookie: {
-    secure: false
+    secure: false // change for production!
   }
 }));
 
@@ -59,7 +61,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
 }));
 
 
-// views setup ____________________________________________________________
+// middleware setup _________________________________________________
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
@@ -74,7 +76,6 @@ app.use(bodyParser.urlencoded({
 
 // routes ____________________________________________________________
 
-
 app.use('/auth', authRouter);
 
 app.get('/', ((req, res) => {
@@ -86,12 +87,11 @@ app.get('/', ((req, res) => {
     const userId = req.session.user;
     User.findOne({
       _id: userId
-    }, (err, user) => {
+    }, (err, user) => { // pass logged in user to react ChatView
       res.render('index', {
         user
       });
     });
-
   }
 }));
 
@@ -107,11 +107,8 @@ app.get('/login', (req, res) => {
   });
 });
 
-
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  console.table(req);
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -129,6 +126,6 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-require('./chatSockets')(server, Room, Message);
+require('./handleWebSocket')(server, Room, Message);
 
 module.exports = app;

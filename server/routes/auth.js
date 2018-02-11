@@ -14,6 +14,7 @@ module.exports = function(User) {
       passwordVerify
     } = req.body;
 
+    // TODO: check password length and characters
     if (username === '' || password !== passwordVerify) {
       req.session.message = 'Please enter valid username and passwords';
       res.redirect('/login');
@@ -35,11 +36,18 @@ module.exports = function(User) {
     }
   });
 
+
   authRouter.post('/login', (req, res) => {
+
     const {
       username,
       password
     } = req.body;
+
+    if (req.session.user) {
+      req.session.message = 'User already logged in.';
+      res.redirect('/login');
+    }
 
     User.findOne({
       name: username
