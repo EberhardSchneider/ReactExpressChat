@@ -8,13 +8,13 @@ function handleWebSocket(server, Room, Message) {
   var io = require('socket.io')(server);
 
   io.on('connection', (socket) => {
-    console.log('Connection started...');
+    console.log('Socket connection started...');
     socket.roomId = ''; // store current chat room id
     socket.userId = ''; // and user id of logged in user
 
-    socket.on('add user', (data) => {
-      socket.userId = data._id;
-      loggedInUsers[socket.userId] = data;
+    socket.on('add user', (user) => {
+      socket.userId = user._id;
+      loggedInUsers[socket.userId] = user;
 
       triggerUserUpdate(socket);
     });
@@ -32,7 +32,7 @@ function handleWebSocket(server, Room, Message) {
     socket.on('new message', (data) => {
       const message = new Message({
         _id: guid.raw(),
-        userId: socket.userId,
+        author: loggedInUsers[socket.userId].name,
         roomId: socket.roomId,
         body: data.message,
         date: new Date()

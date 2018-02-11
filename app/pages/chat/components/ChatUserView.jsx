@@ -11,8 +11,9 @@ const ChatUserView = (props) => {
 
   const localUserStyle = {
     color: 'red',
-    fontSize: '120%'
-  }
+    fontSize: '120%',
+    textTransform: 'uppercase'
+  };
 
   const showedUsers = helper.getUsersFromRoomKey(users, selectedRoomKey);
   return (<div id="chat-user-view">

@@ -3,7 +3,6 @@ import React from 'react';
 class ChatMessageList extends React.Component {
   render() {
     const {
-      localUser,
       actions
     } = this.props;
 
@@ -12,13 +11,9 @@ class ChatMessageList extends React.Component {
       {
         (actions.getMessages()
           .map((message) => {
-            
-            const author = (message.userId == localUser.id)
-              ? localUser.name
-              : actions.getUserNameById(message.userId);
 
             return <div className="chat-message" key={message._id}>
-              <Message author={author} body={message.body}/>
+              <Message author={message.author} body={message.body}/>
             </div>;
           }))
       }

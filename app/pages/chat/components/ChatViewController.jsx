@@ -33,9 +33,7 @@ class ChatViewController extends Component {
       localUser: user
     };
 
-    const socket = io();
 
-    socket.emit('add user', user);
 
     restHelper.get('/rooms')
       .then((data) => {
@@ -50,6 +48,9 @@ class ChatViewController extends Component {
       });
 
     // socket events
+    const socket = io();
+
+    socket.emit('add user', user);
     socket.on('user added', (users) => {
       this.setState({
         socket: socket,
