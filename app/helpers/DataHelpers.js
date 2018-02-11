@@ -27,7 +27,7 @@ const dataHelper = {
       const id = entry[0];
       let user = entry[1];
       if (user.roomId == key) {
-        user.id = id; // add id entry to object in array
+        user._id = id; // add id entry to object in array
         result.push(user);
       }
     });

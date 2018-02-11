@@ -1,22 +1,54 @@
 var express = require('express');
+const guid = require('guid');
 var authRouter = express.Router();
 
-authRouter.post('/login', function(req, res) {
-  res.send('<h1>Sign In</h1>');
-});
 
-authRouter.post('/register', function(req, res) {
-  const {
-    username,
-    password,
-    passwordVerify
-  } = req.body;
+module.exports = function(User) {
 
-  if (username === '' || password !== passwordVerify) {
-    req.session.message = 'Please enter valid username and passwords';
-    res.redirect('/login');
-  }
+  authRouter.post('/register', (req, res) => {
+    const {
+      username,
+      password,
+      passwordVerify
+    } = req.body;
 
-});
+    if (username === '' || password !== passwordVerify) {
+      req.session.message = 'Please enter valid username and passwords';
+      res.redirect('/login');
+    } else {
+      const newUser = new User({
+        _id: guid.raw(),
+        name: username,
+        password: password
+      });
+      newUser.save(err => {
+        console.log(err);
+      });
+    }
+  });
 
-module.exports = authRouter;
+  authRouter.post('/login', (req, res) => {
+    const {
+      username,
+      password
+    } = req.body;
+
+    User.findOne({
+      name: username
+    }, (err, user) => {
+
+      if (!user) {
+        req.session.message = 'Unknown user.';
+        res.redirect('/login');
+      } else if (user.password !== password) {
+        req.session.message = 'Wrong password.';
+        res.redirect('/login');
+      } else {
+        req.session.user = user._id;
+        res.redirect('/');
+      }
+    });
+  });
+
+  return authRouter;
+};

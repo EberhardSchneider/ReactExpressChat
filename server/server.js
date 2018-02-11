@@ -5,13 +5,15 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 const session = require('express-session');
 
-const authRouter = require('./routes/auth');
+
 
 require('./database.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
+const User = require('./models/User.js');
 
 
+const authRouter = require('./routes/auth')(User);
 
 var app = express();
 
@@ -72,6 +74,7 @@ app.use(bodyParser.urlencoded({
 
 // routes ____________________________________________________________
 
+
 app.use('/auth', authRouter);
 
 app.get('/', ((req, res) => {
@@ -80,7 +83,15 @@ app.get('/', ((req, res) => {
       message: req.session.message
     });
   } else {
-    res.render('index');
+    const userId = req.session.user;
+    User.findOne({
+      _id: userId
+    }, (err, user) => {
+      res.render('index', {
+        user
+      });
+    });
+
   }
 }));
 
@@ -91,22 +102,10 @@ app.get('/rooms', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  console.log('after redirect');
-  console.log(req.session.id);
-
   res.render('login', {
     message: req.session.message
   });
 });
-
-app.post('/login', ((req, res) => {
-  if (req.body.username == 'Ebi' && req.body.password == 'Ebi') {
-    req.session.username = 'Ebi';
-    res.redirect('/');
-  } else {
-    res.redirect('/login');
-  }
-}));
 
 
 

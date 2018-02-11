@@ -6,6 +6,7 @@ import ChatUserView from './ChatUserView.jsx';
 import ChatRoomView from './ChatRoomView.jsx';
 
 import ChatMessageView from './ChatMessageView.jsx';
+import io from 'socket.io-client';
 
 import helper from '../../../helpers/RestHelper.js';
 import dataHelper from '../../../helpers/DataHelpers.js';
@@ -20,29 +21,52 @@ class ChatView extends Component {
 
     super(props);
 
-    const {
-      socket,
-      users
-    } = props;
+
+    let {
+      user
+    } = this.props;
+
+    user.roomId = '';
+    let users = {};
+    users[this.props.user._id] = user;
 
     this.state = {
       users: users,
       rooms: {},
       messages: [],
-      selectedRoom: ''
+      selectedRoom: '',
+      localUserId: this.props.user._id
     };
+
+
+
+
+
+    const socket = io();
+
+    socket.emit('add user', user);
+
+    socket.on('user added', (users) => {
+      this.setState({
+        socket: socket,
+        users: users,
+      });
+
+    });
+
+
+
 
     this.roomViewActions = {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
-          let {
-            users
-          } = this.state;
-          users[socket.id].roomId = key;
+          let users = this.state.users;
+          users[this.state.localUserId].roomId = key;
           socket.emit('join room', {
             key: key
           });
           this.setState({
+            users,
             selectedRoom: key
           });
         }
@@ -81,6 +105,9 @@ class ChatView extends Component {
       },
       getUserNameById: (id) => (
         this.state.users[id].name
+      ),
+      getCurrentUserName: () => (
+        this.state.users[this.state.localUserID].name
       )
     };
 
@@ -128,24 +155,27 @@ class ChatView extends Component {
 
   render() {
 
-    return (<div className="container">
-      <div className="four columns">
-        <div>
-          <ChatUserView users={this.state.users}
-            selectedRoomKey={this.state.selectedRoom}/>
-        </div>
-        <div>
-          <ChatRoomView rooms={this.state.rooms}
-            users={this.state.users}
-            actions={this.roomViewActions}/>
-        </div>
+    const View = () =>
+      (<div className="container">
+        <div className="four columns">
+          <div>
+            <ChatUserView users={this.state.users}
+              selectedRoomKey={this.state.selectedRoom}/>
+          </div>
+          <div>
+            <ChatRoomView rooms={this.state.rooms}
+              users={this.state.users}
+              actions={this.roomViewActions}/>
+          </div>
 
-      </div>
-      <div className="eight columns">
-        <ChatMessageView
-          actions={this.messageViewActions}/>
-      </div>
-    </div>);
+        </div>
+        <div className="eight columns">
+          <ChatMessageView
+            actions={this.messageViewActions}/>
+        </div>
+      </div>);
+
+    return (this.state.users) ? <View/> : <div>Loading...</div>;
   }
 }
 

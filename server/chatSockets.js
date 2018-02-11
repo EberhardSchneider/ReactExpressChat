@@ -4,17 +4,19 @@ let loggedInUsers = {};
 
 
 // web socket handling
-
 function chatSockets(server, Room, Message) {
 
   var io = require('socket.io')(server);
+
+
 
   io.on('connection', (socket) => {
     console.log('Connection started...');
     socket.roomId = '';
 
     socket.on('add user', (data) => {
-      loggedInUsers[socket.id] = data;
+      socket.userId = data._id;
+      loggedInUsers[data._id] = data;
       socket.emit('user added', loggedInUsers);
       triggerUserUpdate(socket);
     });
@@ -32,7 +34,7 @@ function chatSockets(server, Room, Message) {
     socket.on('new message', (data) => {
       const message = new Message({
         _id: guid.raw(),
-        userId: socket.id,
+        userId: socket.userId,
         roomId: socket.roomId,
         body: data.message,
         date: new Date()
@@ -49,14 +51,14 @@ function chatSockets(server, Room, Message) {
     });
 
     socket.on('join room', (data) => {
-      loggedInUsers[socket.id].roomId = data.key;
+      loggedInUsers[socket.userId].roomId = data.key;
       socket.roomId = data.key;
       triggerUserUpdate(socket);
 
     });
 
     socket.on('disconnecting', () => {
-      delete loggedInUsers[socket.id];
+      delete loggedInUsers[socket.userId];
       triggerUserUpdate(socket);
     });
   });
