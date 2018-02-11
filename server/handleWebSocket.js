@@ -15,8 +15,7 @@ function handleWebSocket(server, Room, Message) {
     socket.on('add user', (data) => {
       socket.userId = data._id;
       loggedInUsers[socket.userId] = data;
-      // send also to logged in user... TODO: change
-      socket.emit('user added', loggedInUsers);
+
       triggerUserUpdate(socket);
     });
 

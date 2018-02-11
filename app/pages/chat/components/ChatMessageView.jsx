@@ -5,6 +5,7 @@ import ChatMessageInput from './ChatMessageInput.jsx';
 const ChatMessageView = (props) => {
 
   const {
+    localUser,
     actions
   } = props;
 
@@ -13,6 +14,7 @@ const ChatMessageView = (props) => {
       <h4>{actions.getRoomName()}</h4>
 
       <ChatMessageList
+        localUser={localUser}
         actions={actions}/>
 
       <ChatMessageInput

@@ -24,22 +24,19 @@ class ChatViewController extends Component {
       user
     } = this.props;
     user.roomId = '';
-    let users = {};
-    users[this.props.user._id] = user;
 
     this.state = {
-      users: users,
+      users: {},
       rooms: {},
       messages: [],
       selectedRoom: '',
-      localUserId: this.props.user._id
+      localUser: user
     };
 
     const socket = io();
 
     socket.emit('add user', user);
 
-    // get roomViewActions
     restHelper.get('/rooms')
       .then((data) => {
         if (data) {
@@ -60,10 +57,16 @@ class ChatViewController extends Component {
       });
     });
 
-    socket.on('users updated', (data) => {
-      if (data) {
+    socket.on('users updated', (users) => {
+      // delete localuser from common users object
+      const id = this.state.localUser._id;
+      if (users[id]) {
+        delete users[id];
+      }
+
+      if (users) {
         this.setState({
-          users: data
+          users: users
         });
       }
     });
@@ -91,7 +94,7 @@ class ChatViewController extends Component {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
           let users = this.state.users;
-          users[this.state.localUserId].roomId = key;
+          this.state.localUser.roomId = key;
           socket.emit('join room', {
             key: key
           });
@@ -139,7 +142,7 @@ class ChatViewController extends Component {
         this.state.users[id].name
       ),
       getCurrentUserName: () => (
-        this.state.users[this.state.localUserID].name
+        this.state.localUser.name
       )
     };
   } // constructor
@@ -150,7 +153,9 @@ class ChatViewController extends Component {
       (<div className="container">
         <div className="four columns">
           <div>
-            <ChatUserView users={this.state.users}
+            <ChatUserView
+              localUser={this.state.localUser}
+              users={this.state.users}
               selectedRoomKey={this.state.selectedRoom}/>
           </div>
           <div>
@@ -162,6 +167,7 @@ class ChatViewController extends Component {
         </div>
         <div className="eight columns">
           <ChatMessageView
+            localUser={this.state.localUser}
             actions={this.messageViewActions}/>
         </div>
       </div>);
