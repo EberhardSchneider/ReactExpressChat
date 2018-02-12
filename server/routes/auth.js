@@ -30,6 +30,8 @@ module.exports = function(User) {
           newUser.save(err => {
             console.log(err);
           });
+          req.session.message = 'New user ' + username + ' registered succesfully.';
+          res.redirect('/login');
         }
       });
 

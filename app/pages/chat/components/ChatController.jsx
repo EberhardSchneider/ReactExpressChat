@@ -72,6 +72,18 @@ class ChatController extends Component {
       }
     });
 
+    socket.on('user updated', (data) => {
+      const {
+        id,
+        user
+      } = data;
+      let users = this.state.users;
+      users[id] = user;
+      this.setState({
+        users
+      });
+    });
+
     socket.on('rooms updated', (data) => {
       if (data) {
         this.setState({

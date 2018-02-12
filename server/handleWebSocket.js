@@ -15,8 +15,9 @@ function handleWebSocket(server, Room, Message) {
     socket.on('add user', (user) => {
       socket.userId = user._id;
       loggedInUsers[socket.userId] = user;
+      socket.emit('users updated', loggedInUsers);
 
-      triggerUserUpdate(socket);
+      triggerUpdateAllUsers(socket);
     });
 
     socket.on('add room', (data) => {
@@ -25,7 +26,7 @@ function handleWebSocket(server, Room, Message) {
         if (err) {
           console.log('Could not store added room.');
         } else
-          triggerRoomUpdate(socket);
+          triggerUpdateAllRooms(socket);
       });
     });
 
@@ -54,21 +55,28 @@ function handleWebSocket(server, Room, Message) {
       loggedInUsers[socket.userId].roomId = data.key;
       socket.roomId = data.key;
 
-      triggerUserUpdate(socket);
+      triggerUpdateOneUser(socket, socket.userId);
     });
 
     socket.on('disconnecting', () => {
       delete loggedInUsers[socket.userId];
-      triggerUserUpdate(socket);
+      triggerUpdateAllUsers(socket);
     });
   });
 
 
-  function triggerUserUpdate(socket) {
+  function triggerUpdateAllUsers(socket) {
     socket.broadcast.emit('users updated', loggedInUsers);
   }
 
-  function triggerRoomUpdate(socket) {
+  function triggerUpdateOneUser(socket, userId) {
+    socket.broadcast.emit('user updated', {
+      id: userId,
+      user: loggedInUsers[userId]
+    });
+  }
+
+  function triggerUpdateAllRooms(socket) {
     Room.find((err, doc) => {
       socket.broadcast.emit('rooms updated', {
         rooms: doc
