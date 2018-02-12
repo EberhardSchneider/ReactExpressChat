@@ -8,12 +8,12 @@ import guid from 'guid';
 import restHelper from '../../../helpers/RestHelper.js';
 import dataHelper from '../../../helpers/DataHelpers.js';
 
-import ChatUserView from './ChatUserView.jsx';
-import ChatRoomView from './ChatRoomView.jsx';
-import ChatMessageView from './ChatMessageView.jsx';
+import UserView from './UserView.jsx';
+import RoomView from './RoomView.jsx';
+import MessageView from './MessageView.jsx';
 
 
-class ChatViewController extends Component {
+class ChatController extends Component {
 
   constructor(props) {
     super(props);
@@ -90,7 +90,7 @@ class ChatViewController extends Component {
     });
 
 
-    // callbacks for ChatRoomInput
+    // callbacks for RoomInput
     this.roomViewActions = {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
@@ -126,8 +126,8 @@ class ChatViewController extends Component {
 
     // callbacks for MessageView, MessageViewList, MessageInput
     this.messageViewActions = {
-      getRoomName: () => (
-        (this.state.rooms && this.state.rooms[this.state.selectedRoom]) ?
+      getRoomName: () => (this.state.rooms &&
+        this.state.rooms[this.state.selectedRoom] ?
         this.state.rooms[this.state.selectedRoom].name :
         'Lobby'
       ),
@@ -154,20 +154,20 @@ class ChatViewController extends Component {
       (<div className="container">
         <div className="four columns">
           <div>
-            <ChatUserView
+            <UserView
               localUser={this.state.localUser}
               users={this.state.users}
               selectedRoomKey={this.state.selectedRoom}/>
           </div>
           <div>
-            <ChatRoomView rooms={this.state.rooms}
+            <RoomView rooms={this.state.rooms}
               users={this.state.users}
               actions={this.roomViewActions}/>
           </div>
 
         </div>
         <div className="eight columns">
-          <ChatMessageView
+          <MessageView
             localUser={this.state.localUser}
             actions={this.messageViewActions}/>
         </div>
@@ -177,4 +177,4 @@ class ChatViewController extends Component {
   }
 }
 
-module.exports = ChatViewController;
+module.exports = ChatController;

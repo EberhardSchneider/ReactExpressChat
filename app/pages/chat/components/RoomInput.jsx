@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ChatRoomInput extends React.Component {
+class RoomInput extends React.Component {
   constructor(props) {
     super(props);
 
@@ -62,4 +62,4 @@ class ChatRoomInput extends React.Component {
   }
 }
 
-module.exports = ChatRoomInput;
+module.exports = RoomInput;

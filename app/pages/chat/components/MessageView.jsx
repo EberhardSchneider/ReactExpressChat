@@ -1,8 +1,8 @@
 import React from 'react';
-import ChatMessageList from './ChatMessageList.jsx';
-import ChatMessageInput from './ChatMessageInput.jsx';
+import MessageList from './MessageList.jsx';
+import MessageInput from './MessageInput.jsx';
 
-const ChatMessageView = (props) => {
+const MessageView = (props) => {
 
   const {
     localUser,
@@ -13,13 +13,13 @@ const ChatMessageView = (props) => {
     <div id='chat-message-view' className={'two-thirds column'}>
       <h4>{actions.getRoomName()}</h4>
 
-      <ChatMessageList
+      <MessageList
         localUser={localUser}
         actions={actions}/>
 
-      <ChatMessageInput
+      <MessageInput
         actions={actions}/>
     </div>);
 };
 
-module.exports = ChatMessageView;
+module.exports = MessageView;

@@ -1,7 +1,7 @@
 import React from 'react';
 import helper from '../../../helpers/DataHelpers';
 
-const ChatUserView = (props) => {
+const UserView = (props) => {
 
   const {
     localUser,
@@ -31,4 +31,4 @@ const ChatUserView = (props) => {
   </div>);
 };
 
-module.exports = ChatUserView;
+module.exports = UserView;

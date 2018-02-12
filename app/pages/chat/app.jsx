@@ -2,11 +2,11 @@ import 'skeleton-css-webpack';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../../styles/main.css';
-import ChatViewController from './components/ChatViewController.jsx';
+import ChatController from './components/ChatController.jsx';
 
 // user is set in server/views/index.ejs
 ReactDOM.render(
-  <ChatViewController user={user}/>,
+  <ChatController user={user}/>,
   document.getElementById('app')
 );
 

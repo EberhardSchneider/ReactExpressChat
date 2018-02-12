@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ChatMessageList extends React.Component {
+class MessageList extends React.Component {
   render() {
     const {
       actions
@@ -49,4 +49,4 @@ const Message = ({
   );
 };
 
-module.exports = ChatMessageList;
+module.exports = MessageList;

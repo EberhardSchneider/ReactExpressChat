@@ -1,8 +1,8 @@
 import React from 'react';
-import ChatRoomList from './ChatRoomList.jsx';
-import ChatRoomInput from './ChatRoomInput.jsx';
+import RoomList from './RoomList.jsx';
+import RoomInput from './RoomInput.jsx';
 
-class ChatRoomView extends React.Component {
+class RoomView extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -10,14 +10,14 @@ class ChatRoomView extends React.Component {
   render() {
     return (<div id="chat-room-view">
       <h4>Rooms</h4>
-      <ChatRoomList rooms={this.props.rooms}
+      <RoomList rooms={this.props.rooms}
         actions={this.props.actions}
         selectedRoom={this.props.selectedRoom}/>
-      <ChatRoomInput
+      <RoomInput
         actions={this.props.actions}/>
     </div>);
   }
 
 }
 
-module.exports = ChatRoomView;
+module.exports = RoomView;
