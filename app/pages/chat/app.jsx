@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import '../../styles/main.css';
 import ChatController from './components/ChatController.jsx';
 
-// user is set in server/views/index.ejs
+// window.user is set in server/views/index.ejs
 ReactDOM.render(
-  <ChatController user={user}/>,
+  <ChatController user={window.user}/>,
   document.getElementById('app')
 );
 

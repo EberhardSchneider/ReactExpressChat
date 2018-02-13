@@ -29,7 +29,6 @@ class ChatController extends Component {
       users: {},
       rooms: {},
       messages: [],
-      selectedRoom: '',
       localUser: user
     };
 
@@ -112,8 +111,7 @@ class ChatController extends Component {
             key: key
           });
           this.setState({
-            users,
-            selectedRoom: key
+            users
           });
         }
       },
@@ -139,12 +137,12 @@ class ChatController extends Component {
     // callbacks for MessageView, MessageViewList, MessageInput
     this.messageViewActions = {
       getRoomName: () => (this.state.rooms &&
-        this.state.rooms[this.state.selectedRoom] ?
-        this.state.rooms[this.state.selectedRoom].name :
+        this.state.rooms[this.state.localUser.roomId] ?
+        this.state.rooms[this.state.localUser.roomId].name :
         'Lobby'
       ),
       getMessages: () => (
-        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.selectedRoom)
+        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.localUser.roomId)
       ),
       emitMessage: (messageBody) => {
         socket.emit('new message', {
@@ -169,7 +167,7 @@ class ChatController extends Component {
             <UserView
               localUser={this.state.localUser}
               users={this.state.users}
-              selectedRoomKey={this.state.selectedRoom}/>
+              selectedRoomKey={this.state.localUser.roomId}/>
           </div>
           <div>
             <RoomView rooms={this.state.rooms}
