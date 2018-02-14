@@ -14,4 +14,8 @@ If you don't want to install the local database, you can switch to my public Mon
 - GUID
 - Skeleton CSS
 - Jest
+
 and more...
+
+#### Bundler:
+webpack
