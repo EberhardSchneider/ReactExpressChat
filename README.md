@@ -4,6 +4,7 @@
 
 #### Installation
 After cloning the repository, run `npm install`, then `npm start`.
+
 A local MongoDB must be running on <i>http://localhost:27017</i>.
 If you don't want to install the local database, you can switch to my public MongoDB instance in `server/database.js`.
 
@@ -17,5 +18,3 @@ If you don't want to install the local database, you can switch to my public Mon
 
 and more...
 
-#### Bundler:
-webpack
