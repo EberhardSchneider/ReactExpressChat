@@ -6,6 +6,6 @@ const mongoose = require('mongoose');
 //     console.log('Connected');
 //   });
 
-mongoose.connect('mongodb://localhost:27017/test', () => {
+mongoose.connect('mongodb://root:secret@ds247178.mlab.com:47178/heroku_ttxdpfrr', () => {
   console.log('Connected to local mongodb database');
 });
