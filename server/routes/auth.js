@@ -8,6 +8,7 @@ var authRouter = express.Router();
 module.exports = function(User) {
 
   authRouter.post('/register', (req, res) => {
+    console.log('Registering User!');
     const {
       username,
       password,
@@ -56,17 +57,17 @@ module.exports = function(User) {
       if (!user) {
         req.session.message = 'Unknown user.';
         res.redirect('/login');
+      } else {
+        bcrypt.compare(password, user.password, (err, result) => {
+          if (result) {
+            req.session.user = user._id;
+            res.redirect('/');
+          } else {
+            req.session.message = 'Wrong password.';
+            res.redirect('/login');
+          }
+        });
       }
-
-      bcrypt.compare(password, user.password, (err, result) => {
-        if (result) {
-          req.session.user = user._id;
-          res.redirect('/');
-        } else {
-          req.session.message = 'Wrong password.';
-          res.redirect('/login');
-        }
-      });
     });
   });
 
