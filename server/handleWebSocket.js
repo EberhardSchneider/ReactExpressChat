@@ -8,15 +8,16 @@ function handleWebSocket(server, Room, Message) {
   var io = require('socket.io')(server);
 
   io.on('connection', (socket) => {
-    console.log('Connection started...');
+    console.log('Socket connection started...');
     socket.roomId = ''; // store current chat room id
     socket.userId = ''; // and user id of logged in user
 
-    socket.on('add user', (data) => {
-      socket.userId = data._id;
-      loggedInUsers[socket.userId] = data;
+    socket.on('add user', (user) => {
+      socket.userId = user._id;
+      loggedInUsers[socket.userId] = user;
+      socket.emit('users updated', loggedInUsers);
 
-      triggerUserUpdate(socket);
+      triggerUpdateAllUsers(socket);
     });
 
     socket.on('add room', (data) => {
@@ -25,14 +26,14 @@ function handleWebSocket(server, Room, Message) {
         if (err) {
           console.log('Could not store added room.');
         } else
-          triggerRoomUpdate(socket);
+          triggerUpdateAllRooms(socket);
       });
     });
 
     socket.on('new message', (data) => {
       const message = new Message({
         _id: guid.raw(),
-        userId: socket.userId,
+        author: loggedInUsers[socket.userId].name,
         roomId: socket.roomId,
         body: data.message,
         date: new Date()
@@ -54,21 +55,28 @@ function handleWebSocket(server, Room, Message) {
       loggedInUsers[socket.userId].roomId = data.key;
       socket.roomId = data.key;
 
-      triggerUserUpdate(socket);
+      triggerUpdateOneUser(socket, socket.userId);
     });
 
     socket.on('disconnecting', () => {
       delete loggedInUsers[socket.userId];
-      triggerUserUpdate(socket);
+      triggerUpdateAllUsers(socket);
     });
   });
 
 
-  function triggerUserUpdate(socket) {
+  function triggerUpdateAllUsers(socket) {
     socket.broadcast.emit('users updated', loggedInUsers);
   }
 
-  function triggerRoomUpdate(socket) {
+  function triggerUpdateOneUser(socket, userId) {
+    socket.broadcast.emit('user updated', {
+      id: userId,
+      user: loggedInUsers[userId]
+    });
+  }
+
+  function triggerUpdateAllRooms(socket) {
     Room.find((err, doc) => {
       socket.broadcast.emit('rooms updated', {
         rooms: doc

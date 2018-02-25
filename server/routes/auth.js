@@ -31,6 +31,8 @@ module.exports = function(User) {
           newUser.save(err => {
             console.log(err);
           });
+          req.session.message = 'New user ' + username + ' registered succesfully.';
+          res.redirect('/login');
         }
       });
 
@@ -54,7 +56,7 @@ module.exports = function(User) {
       name: username
     }, (err, user) => {
 
-      if (!user) {
+      if (!user || !user.password) {
         req.session.message = 'Unknown user.';
         res.redirect('/login');
       } else {

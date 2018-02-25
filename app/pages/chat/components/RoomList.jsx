@@ -1,6 +1,6 @@
 import React from 'react';
 
-class ChatRoomList extends React.Component {
+class RoomList extends React.Component {
 
   constructor(props) {
     super(props);
@@ -13,7 +13,7 @@ class ChatRoomList extends React.Component {
     this.props.actions.selectRoom(key);
   }
 
-  //  TODO: differenciate ChatRoomSelector and ChatRoomList (stateless)
+  //  TODO: differenciate ChatRoomSelector and RoomList (stateless)
   render() {
     const {
       rooms,
@@ -39,4 +39,4 @@ class ChatRoomList extends React.Component {
   }
 }
 
-module.exports = ChatRoomList;
+module.exports = RoomList;

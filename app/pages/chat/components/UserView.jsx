@@ -1,7 +1,7 @@
 import React from 'react';
 import helper from '../../../helpers/DataHelpers';
 
-const ChatUserView = (props) => {
+const UserView = (props) => {
 
   const {
     localUser,
@@ -11,8 +11,9 @@ const ChatUserView = (props) => {
 
   const localUserStyle = {
     color: 'red',
-    fontSize: '120%'
-  }
+    fontSize: '120%',
+    textTransform: 'uppercase'
+  };
 
   const showedUsers = helper.getUsersFromRoomKey(users, selectedRoomKey);
   return (<div id="chat-user-view">
@@ -30,4 +31,4 @@ const ChatUserView = (props) => {
   </div>);
 };
 
-module.exports = ChatUserView;
+module.exports = UserView;

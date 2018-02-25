@@ -8,12 +8,12 @@ import guid from 'guid';
 import restHelper from '../../../helpers/RestHelper.js';
 import dataHelper from '../../../helpers/DataHelpers.js';
 
-import ChatUserView from './ChatUserView.jsx';
-import ChatRoomView from './ChatRoomView.jsx';
-import ChatMessageView from './ChatMessageView.jsx';
+import UserView from './UserView.jsx';
+import RoomView from './RoomView.jsx';
+import MessageView from './MessageView.jsx';
 
 
-class ChatViewController extends Component {
+class ChatController extends Component {
 
   constructor(props) {
     super(props);
@@ -29,13 +29,10 @@ class ChatViewController extends Component {
       users: {},
       rooms: {},
       messages: [],
-      selectedRoom: '',
       localUser: user
     };
 
-    const socket = io();
 
-    socket.emit('add user', user);
 
     restHelper.get('/rooms')
       .then((data) => {
@@ -50,6 +47,9 @@ class ChatViewController extends Component {
       });
 
     // socket events
+    const socket = io();
+
+    socket.emit('add user', user);
     socket.on('user added', (users) => {
       this.setState({
         socket: socket,
@@ -71,6 +71,18 @@ class ChatViewController extends Component {
       }
     });
 
+    socket.on('user updated', (data) => {
+      const {
+        id,
+        user
+      } = data;
+      let users = this.state.users;
+      users[id] = user;
+      this.setState({
+        users
+      });
+    });
+
     socket.on('rooms updated', (data) => {
       if (data) {
         this.setState({
@@ -89,7 +101,7 @@ class ChatViewController extends Component {
     });
 
 
-    // callbacks for ChatRoomInput
+    // callbacks for RoomInput
     this.roomViewActions = {
       selectRoom: key => {
         if (key !== this.state.selectedRoom) {
@@ -99,8 +111,7 @@ class ChatViewController extends Component {
             key: key
           });
           this.setState({
-            users,
-            selectedRoom: key
+            users
           });
         }
       },
@@ -125,13 +136,13 @@ class ChatViewController extends Component {
 
     // callbacks for MessageView, MessageViewList, MessageInput
     this.messageViewActions = {
-      getRoomName: () => (
-        (this.state.rooms && this.state.rooms[this.state.selectedRoom]) ?
-        this.state.rooms[this.state.selectedRoom].name :
+      getRoomName: () => (this.state.rooms &&
+        this.state.rooms[this.state.localUser.roomId] ?
+        this.state.rooms[this.state.localUser.roomId].name :
         'Lobby'
       ),
       getMessages: () => (
-        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.selectedRoom)
+        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.localUser.roomId)
       ),
       emitMessage: (messageBody) => {
         socket.emit('new message', {
@@ -153,20 +164,20 @@ class ChatViewController extends Component {
       (<div className="container">
         <div className="four columns">
           <div>
-            <ChatUserView
+            <UserView
               localUser={this.state.localUser}
               users={this.state.users}
-              selectedRoomKey={this.state.selectedRoom}/>
+              selectedRoomKey={this.state.localUser.roomId}/>
           </div>
           <div>
-            <ChatRoomView rooms={this.state.rooms}
+            <RoomView rooms={this.state.rooms}
               users={this.state.users}
               actions={this.roomViewActions}/>
           </div>
 
         </div>
         <div className="eight columns">
-          <ChatMessageView
+          <MessageView
             localUser={this.state.localUser}
             actions={this.messageViewActions}/>
         </div>
@@ -176,4 +187,4 @@ class ChatViewController extends Component {
   }
 }
 
-module.exports = ChatViewController;
+module.exports = ChatController;

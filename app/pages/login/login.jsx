@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import '../../styles/main.css';
 import LoginView from './components/LoginView.jsx';
 
-// message is set in server/views/login.ejs
+// window.message is set in server/views/login.ejs
 ReactDOM.render(
-  <LoginView message={message}/>,
+  <LoginView message={window.message}/>,
   document.getElementById('app')
 );
 
