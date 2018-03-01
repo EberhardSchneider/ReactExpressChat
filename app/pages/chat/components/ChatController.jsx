@@ -36,125 +36,86 @@ class ChatController extends Component {
 
     this.storeId = this.store.subscribe(this.onStoreChange.bind(this));
 
-    this.state = {
-      users: {},
-      rooms: {},
-      messages: [],
-      localUser: user
-    };
+    this.store.addSocketEvents(user);
+
+    this.state = this.store.getData();
 
 
     dataApi.getAndPushToStore('/rooms', this.store);
 
-    // socket events
-    const socket = io();
-
-    socket.emit('add user', user);
-    socket.on('user added', (users) => {
-      this.store.setData({
-        socket: socket,
-        users: users,
-      });
-    });
-
-    socket.on('users updated', (users) => {
-      // delete localuser from common users object
-      const id = this.state.localUser._id;
-      if (users[id]) {
-        delete users[id];
-      }
-
-      if (users) {
-        this.store.setData({
-          users: users
-        });
-      }
-    });
-
-    socket.on('user updated', (data) => {
-      const {
-        id,
-        user
-      } = data;
-      let users = this.state.users;
-      users[id] = user;
-      this.store.setData({
-        users
-      });
-    });
-
-    socket.on('rooms updated', (data) => {
-      if (data) {
-        this.store.setData({
-          rooms: dataHelper.mapFromObject(data.rooms)
-        });
-      }
-    });
-
-    socket.on('new message', (data) => {
-      const message = data;
-      let messages = this.state.messages;
-      messages.push(message);
-      this.store.setData({
-        messages: messages
-      });
-    });
+    // // socket events
+    // const socket = io();
+    //
+    // socket.emit('add user', user);
+    // socket.on('user added', (users) => {
+    //   this.store.setData({
+    //     socket: socket,
+    //     users: users,
+    //   });
+    // });
+    //
+    // socket.on('users updated', (users) => {
+    //   // delete localuser from common users object
+    //   const id = this.state.localUser._id;
+    //   if (users[id]) {
+    //     delete users[id];
+    //   }
+    //
+    //   if (users) {
+    //     this.store.setData({
+    //       users: users
+    //     });
+    //   }
+    // });
+    //
+    // socket.on('user updated', (data) => {
+    //   const {
+    //     id,
+    //     user
+    //   } = data;
+    //   let users = this.state.users;
+    //   users[id] = user;
+    //   this.store.setData({
+    //     users
+    //   });
+    // });
+    //
+    // socket.on('rooms updated', (data) => {
+    //   if (data) {
+    //     this.store.setData({
+    //       rooms: dataHelper.mapFromObject(data.rooms)
+    //     });
+    //   }
+    // });
+    //
+    // socket.on('new message', (data) => {
+    //   const message = data;
+    //   let messages = this.state.messages;
+    //   messages.push(message);
+    //   this.store.setData({
+    //     messages: messages
+    //   });
+    // });
 
 
     // callbacks for RoomInput
     this.roomViewActions = {
       selectRoom: key => {
-        if (key !== this.state.selectedRoom) {
-          let users = this.state.users;
-          this.state.localUser.roomId = key;
-          socket.emit('join room', {
-            key: key
-          });
-          this.store.setData({
-            users
-          });
-        }
+        this.store.selectRoom(key);
       },
 
       addRoom: name => {
-        const newRoom = {
-          _id: guid.raw(),
-          name: name
-        };
-
-        socket.emit('add room', newRoom);
-
-        // update state/gui directly
-        // so we don't have to wait for the socket connection
-        let rooms = this.state.rooms;
-        rooms[newRoom._id] = newRoom;
-        this.store.setData({
-          rooms: rooms
-        });
+        this.store.addRoom(name);
       }
     };
 
     // callbacks for MessageView, MessageViewList, MessageInput
     this.messageViewActions = {
-      getRoomName: () => (this.state.rooms &&
-        this.state.rooms[this.state.localUser.roomId] ?
-        this.state.rooms[this.state.localUser.roomId].name :
-        'Lobby'
-      ),
-      getMessages: () => (
-        dataHelper.getMessagesFromRoomKey(this.state.messages, this.state.localUser.roomId)
-      ),
+      getRoomName: () => (this.store.getRoomName()),
+      getMessages: () => (this.store.getMessages()),
       emitMessage: (messageBody) => {
-        socket.emit('new message', {
-          message: messageBody
-        });
-      },
-      getUserNameById: (id) => (
-        this.state.users[id].name
-      ),
-      getCurrentUserName: () => (
-        this.state.localUser.name
-      )
+        this.store.emitMessage(messageBody);
+      }
     };
   } // constructor
 

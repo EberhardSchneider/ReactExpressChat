@@ -1,3 +1,8 @@
+import dataHelper from '../helpers/DataHelpers.js';
+import io from 'socket.io-client';
+import guid from 'guid';
+
+
 export default class Store {
 
   constructor(data) {
@@ -5,7 +10,6 @@ export default class Store {
 
     this.listeners = {};
     this.id = 0;
-    this.data = {};
   }
 
   setData(newData) {
@@ -15,6 +19,10 @@ export default class Store {
     };
     this.data = mergedData;
     this.triggerListeners();
+  }
+
+  getData() {
+    return this.data;
   }
 
   subscribe(callback) {
@@ -34,5 +42,112 @@ export default class Store {
       .map((callback) => {
         callback(this.data);
       });
+  }
+
+  addSocketEvents(user) {
+    // store current User
+    this.data.localUser = user;
+
+    // socket events
+    this.socket = io();
+
+    this.socket.emit('add user', user);
+
+    this.socket.on('user added', (users) => {
+      this.setData({
+        socket: this.socket,
+        users: users,
+      });
+    });
+
+    this.socket.on('users updated', (users) => {
+      // delete localuser from common users object
+      const id = this.data.localUser._id;
+      if (users[id]) {
+        delete users[id];
+      }
+
+      if (users) {
+        this.setData({
+          users: users
+        });
+      }
+    });
+
+    this.socket.on('user updated', (data) => {
+      const {
+        id,
+        user
+      } = data;
+      let users = this.state.users;
+      users[id] = user;
+      this.setData({
+        users
+      });
+    });
+
+    this.socket.on('rooms updated', (data) => {
+      if (data) {
+        this.setData({
+          rooms: dataHelper.mapFromObject(data.rooms)
+        });
+      }
+    });
+
+    this.socket.on('new message', (data) => {
+      const message = data;
+      let messages = this.data.messages;
+      messages.push(message);
+      this.setData({
+        messages: messages
+      });
+    });
+  }
+
+  selectRoom(key) {
+    if (key !== this.state.selectedRoom) {
+      let users = this.data.users;
+      this.state.localUser.roomId = key;
+      this.socket.emit('join room', {
+        key: key
+      });
+      this.setData({
+        users
+      });
+    }
+  }
+
+  addRoom(name) {
+    const newRoom = {
+      _id: guid.raw(),
+      name: name
+    };
+
+    this.socket.emit('add room', newRoom);
+
+    // update state/gui directly
+    // so we don't have to wait for the socket connection
+    let rooms = this.state.rooms;
+    rooms[newRoom._id] = newRoom;
+    this.setData({
+      rooms: rooms
+    });
+  }
+
+  getRoomName() {
+    return this.data.rooms &&
+      this.data.rooms[this.data.localUser.roomId] ?
+      this.data.rooms[this.data.localUser.roomId].name :
+      'Lobby';
+  }
+
+  getMessages() {
+    return dataHelper.getMessagesFromRoomKey(this.data.messages, this.data.localUser.roomId);
+  }
+
+  emitMessage(messageBody) {
+    this.socket.emit('new message', {
+      message: messageBody
+    });
   }
 }

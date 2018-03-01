@@ -13,6 +13,7 @@ const dataHelper = {
   },
 
   getMessagesFromRoomKey: function(messages, key) {
+    messages = messages || [];
     return messages.filter(message => message.roomId == key);
   },
 
