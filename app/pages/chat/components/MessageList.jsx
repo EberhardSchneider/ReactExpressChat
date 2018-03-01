@@ -11,7 +11,6 @@ class MessageList extends React.Component {
       {
         (actions.getMessages()
           .map((message) => {
-
             return <div className="chat-message" key={message._id}>
               <Message author={message.author} body={message.body}/>
             </div>;

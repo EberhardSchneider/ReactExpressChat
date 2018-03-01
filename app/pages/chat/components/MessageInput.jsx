@@ -15,7 +15,6 @@ class ChatInputMessage extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
     this.props.actions.emitMessage(this.state.message);
-    // this.props.socket.emit('new message', {message: this.state.message});
     this.setState({
       message: ''
     });

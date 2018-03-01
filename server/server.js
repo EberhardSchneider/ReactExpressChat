@@ -78,6 +78,12 @@ app.use(bodyParser.urlencoded({
 
 app.use('/auth', authRouter);
 
+app.get('/rooms', (req, res) => {
+  Room.find((err, doc) => {
+    res.send(doc);
+  });
+});
+
 app.get('/*', ((req, res) => {
   if (!req.session.user) {
     res.render('login', {
@@ -95,11 +101,7 @@ app.get('/*', ((req, res) => {
   }
 }));
 
-app.get('/rooms', (req, res) => {
-  Room.find((err, doc) => {
-    res.send(doc);
-  });
-});
+
 
 app.get('/login', (req, res) => {
   res.render('login', {

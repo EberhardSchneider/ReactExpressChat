@@ -94,25 +94,25 @@ export default class Store {
       }
     });
 
-    this.socket.on('new message', (data) => {
-      const message = data;
+    this.socket.on('new message', (message) => {
       let messages = this.data.messages;
       messages.push(message);
       this.setData({
-        messages: messages
+        messages
       });
     });
   }
 
   selectRoom(key) {
-    if (key !== this.state.selectedRoom) {
-      let users = this.data.users;
-      this.state.localUser.roomId = key;
+    if (key !== this.data.selectedRoom) {
+      this.data.selectedRoom = key;
+      let localUser = this.data.localUser;
+      localUser.roomId = key;
       this.socket.emit('join room', {
         key: key
       });
       this.setData({
-        users
+        localUser
       });
     }
   }
@@ -149,5 +149,9 @@ export default class Store {
     this.socket.emit('new message', {
       message: messageBody
     });
+  }
+
+  logout() {
+    this.socket.emit('logout');
   }
 }
