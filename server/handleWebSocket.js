@@ -62,6 +62,11 @@ function handleWebSocket(server, Room, Message) {
       delete loggedInUsers[socket.userId];
       triggerUpdateAllUsers(socket);
     });
+
+    socket.on('logout', () => {
+      delete loggedInUsers[socket.userId];
+      triggerUpdateAllUsers(socket);
+    });
   });
 
 

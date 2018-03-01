@@ -39,12 +39,17 @@ class RoomInput extends React.Component {
     });
   }
 
+  deleteRoom = () => {
+    console.log('Delete room');
+  }
+
   render() {
 
     const {
       actions,
       isAdmin
     } = this.props;
+
 
     return (<div className="chat-room-input row">
 
@@ -65,7 +70,8 @@ class RoomInput extends React.Component {
           : null
       }
       {
-        isAdmin ? <button>Delete Room</button> : null
+        isAdmin
+          ? <button className="center" onClick={deleteRoom}>Delete Room</button> : null
       }
     </div>);
   }

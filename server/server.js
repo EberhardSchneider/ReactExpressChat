@@ -84,6 +84,13 @@ app.get('/rooms', (req, res) => {
   });
 });
 
+
+app.get('/logout', (req, res) => {
+  req.session.user = undefined;
+  delete req.session.user;
+  res.redirect('/');
+});
+
 app.get('/*', ((req, res) => {
   if (!req.session.user) {
     res.render('login', {
@@ -102,12 +109,6 @@ app.get('/*', ((req, res) => {
 }));
 
 
-
-app.get('/login', (req, res) => {
-  res.render('login', {
-    message: req.session.message
-  });
-});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

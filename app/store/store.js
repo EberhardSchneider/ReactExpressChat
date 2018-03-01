@@ -1,4 +1,5 @@
 import dataHelper from '../helpers/DataHelpers.js';
+import restHelper from '../helpers/RestHelpers.js';
 import io from 'socket.io-client';
 import guid from 'guid';
 
@@ -150,9 +151,5 @@ export default class Store {
     this.socket.emit('new message', {
       message: messageBody
     });
-  }
-
-  logout() {
-    this.socket.emit('logout');
   }
 }
