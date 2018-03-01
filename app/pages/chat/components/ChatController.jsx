@@ -61,7 +61,7 @@ class ChatController extends Component {
           </div>
           <div>
             <RoomView rooms={this.state.rooms}
-              users={this.state.users}
+              localUser={this.state.localUser}
               actions={this.roomViewActions}/>
           </div>
 

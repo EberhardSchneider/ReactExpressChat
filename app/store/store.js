@@ -120,14 +120,15 @@ export default class Store {
   addRoom(name) {
     const newRoom = {
       _id: guid.raw(),
-      name: name
+      name: name,
+      admin_userId: this.data.localUser._id
     };
 
     this.socket.emit('add room', newRoom);
 
     // update state/gui directly
     // so we don't have to wait for the socket connection
-    let rooms = this.state.rooms;
+    let rooms = this.data.rooms;
     rooms[newRoom._id] = newRoom;
     this.setData({
       rooms: rooms
