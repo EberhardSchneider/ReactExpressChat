@@ -11,6 +11,7 @@ import dataHelper from '../../../helpers/DataHelpers.js';
 import UserView from './UserView.jsx';
 import RoomView from './RoomView.jsx';
 import MessageView from './MessageView.jsx';
+import Store from '../../../store/store';
 
 
 class ChatController extends Component {
@@ -25,6 +26,15 @@ class ChatController extends Component {
     } = this.props;
     user.roomId = '';
 
+    this.store = new Store({
+      users: {},
+      rooms: {},
+      messages: [],
+      localUser: user
+    });
+
+    this.storeId = this.store.subscribe(this.onStoreChange.bind(this));
+
     this.state = {
       users: {},
       rooms: {},
@@ -32,12 +42,10 @@ class ChatController extends Component {
       localUser: user
     };
 
-
-
     restHelper.get('/rooms')
       .then((data) => {
         if (data) {
-          this.setState({
+          this.store.setData({
             rooms: dataHelper.mapFromObject(data)
           });
         }
@@ -51,7 +59,7 @@ class ChatController extends Component {
 
     socket.emit('add user', user);
     socket.on('user added', (users) => {
-      this.setState({
+      this.store.setData({
         socket: socket,
         users: users,
       });
@@ -65,7 +73,7 @@ class ChatController extends Component {
       }
 
       if (users) {
-        this.setState({
+        this.store.setData({
           users: users
         });
       }
@@ -78,14 +86,14 @@ class ChatController extends Component {
       } = data;
       let users = this.state.users;
       users[id] = user;
-      this.setState({
+      this.store.setData({
         users
       });
     });
 
     socket.on('rooms updated', (data) => {
       if (data) {
-        this.setState({
+        this.store.setData({
           rooms: dataHelper.mapFromObject(data.rooms)
         });
       }
@@ -95,7 +103,7 @@ class ChatController extends Component {
       const message = data;
       let messages = this.state.messages;
       messages.push(message);
-      this.setState({
+      this.store.setData({
         messages: messages
       });
     });
@@ -110,7 +118,7 @@ class ChatController extends Component {
           socket.emit('join room', {
             key: key
           });
-          this.setState({
+          this.store.setData({
             users
           });
         }
@@ -128,9 +136,9 @@ class ChatController extends Component {
         // so we don't have to wait for the socket connection
         let rooms = this.state.rooms;
         rooms[newRoom._id] = newRoom;
-        this.setState(() => ({
+        this.store.setData({
           rooms: rooms
-        }));
+        });
       }
     };
 
@@ -158,6 +166,9 @@ class ChatController extends Component {
     };
   } // constructor
 
+  onStoreChange(data) {
+    this.setState(data);
+  }
 
   render() {
     const View = () =>
