@@ -79,7 +79,7 @@ export default class Store {
         id,
         user
       } = data;
-      let users = this.state.users;
+      let users = this.data.users;
       users[id] = user;
       this.setData({
         users
@@ -105,14 +105,14 @@ export default class Store {
 
   selectRoom(key) {
     if (key !== this.data.selectedRoom) {
-      this.data.selectedRoom = key;
       let localUser = this.data.localUser;
       localUser.roomId = key;
       this.socket.emit('join room', {
         key: key
       });
       this.setData({
-        localUser
+        localUser,
+        selectedRoom: key
       });
     }
   }

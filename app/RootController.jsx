@@ -24,16 +24,13 @@ export default class RootController extends React.PureComponent {
       store: store
     };
 
-    this.storeId = this.state.store.subscribe(this.onStoreChange.bind(this));
+
 
     dataApi.getAndPushToStore('/rooms', this.state.store);
     this.state.store.addSocketEvents(this.props.user);
   }
 
-  onStoreChange(data) {
-    this.setState(data);
-    this.forceUpdate();
-  }
+
 
   chatClick = () => {
     this.setState(() => ({

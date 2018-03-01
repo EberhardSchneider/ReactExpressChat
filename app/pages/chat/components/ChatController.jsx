@@ -25,6 +25,10 @@ class ChatController extends Component {
 
     this.state = this.store.getData();
 
+    this.storeId = this.store.subscribe(this.onStoreChange);
+
+
+
 
 
     // callbacks for RoomInput
@@ -48,6 +52,10 @@ class ChatController extends Component {
     };
   } // constructor
 
+  onStoreChange = (data) => {
+    this.setState(data);
+  }
+
 
   render() {
     const View = () =>
@@ -62,6 +70,7 @@ class ChatController extends Component {
           <div>
             <RoomView rooms={this.state.rooms}
               localUser={this.state.localUser}
+              selectedRoom={this.state.selectedRoom}
               actions={this.roomViewActions}/>
           </div>
 

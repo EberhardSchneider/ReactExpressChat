@@ -40,6 +40,12 @@ class RoomInput extends React.Component {
   }
 
   render() {
+
+    const {
+      actions,
+      isAdmin
+    } = this.props;
+
     return (<div className="chat-room-input row">
 
       <button className="u-full-width"
@@ -57,6 +63,9 @@ class RoomInput extends React.Component {
 
           </form>
           : null
+      }
+      {
+        isAdmin ? <button>Delete Room</button> : null
       }
     </div>);
   }

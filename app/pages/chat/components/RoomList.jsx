@@ -17,6 +17,7 @@ class RoomList extends React.Component {
   render() {
     const {
       rooms,
+      localUser,
       selectedRoom
     } = this.props;
 
@@ -28,10 +29,12 @@ class RoomList extends React.Component {
           const className = (id == selectedRoom)
             ? 'room-list-item active'
             : 'room-list-item';
+          const roomName = (localUser._id === room.admin_userId)
+            ? room.name + ' (Admin)' : room.name;
           return <div key={id}
             onClick={this.handleClick.bind(this,id)}
             className={className}>
-            {room.name}
+            {roomName}
           </div>;
         })
       }
