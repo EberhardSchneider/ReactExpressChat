@@ -78,7 +78,7 @@ app.use(bodyParser.urlencoded({
 
 app.use('/auth', authRouter);
 
-app.get('/', ((req, res) => {
+app.get('/*', ((req, res) => {
   if (!req.session.user) {
     res.render('login', {
       message: req.session.message
