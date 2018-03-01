@@ -5,8 +5,8 @@ import React, {
 import io from 'socket.io-client';
 import guid from 'guid';
 
-import restHelper from '../../../helpers/RestHelper.js';
 import dataHelper from '../../../helpers/DataHelpers.js';
+import dataApi from '../../../store/data-api';
 
 import UserView from './UserView.jsx';
 import RoomView from './RoomView.jsx';
@@ -18,6 +18,7 @@ class ChatController extends Component {
 
   constructor(props) {
     super(props);
+
 
     // this is to show the logged in user
     // before socket.io sends list of all users async
@@ -42,17 +43,8 @@ class ChatController extends Component {
       localUser: user
     };
 
-    restHelper.get('/rooms')
-      .then((data) => {
-        if (data) {
-          this.store.setData({
-            rooms: dataHelper.mapFromObject(data)
-          });
-        }
-      })
-      .catch((error) => {
-        console.log('Error getting room data:' + error);
-      });
+
+    dataApi.getRooms(this.store);
 
     // socket events
     const socket = io();

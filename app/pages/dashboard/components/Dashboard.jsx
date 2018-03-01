@@ -5,6 +5,7 @@ class Dashboard extends React.Component {
     return (
       <div>
         <h1>Show User Dashboard</h1>
+        <UsersOnline/>
       </div>
     );
   }
