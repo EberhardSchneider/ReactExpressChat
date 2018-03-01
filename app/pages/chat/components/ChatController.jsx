@@ -44,7 +44,7 @@ class ChatController extends Component {
     };
 
 
-    dataApi.getRooms(this.store);
+    dataApi.getAndPushToStore('/rooms', this.store);
 
     // socket events
     const socket = io();
