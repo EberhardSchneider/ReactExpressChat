@@ -11,9 +11,10 @@ require('./database.js');
 const Room = require('./models/Room.js');
 const Message = require('./models/Message.js');
 const User = require('./models/User.js');
+const UserDetail = require('./models/UserDetail.js');
 
 // routes
-const authRouter = require('./routes/auth')(User);
+const authRouter = require('./routes/auth')(User, UserDetail);
 
 // ____________________________________________________________
 

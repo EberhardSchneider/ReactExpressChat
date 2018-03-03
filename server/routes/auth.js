@@ -5,7 +5,7 @@ var bcrypt = require('bcrypt');
 var authRouter = express.Router();
 
 
-module.exports = function(User) {
+module.exports = function(User, UserDetail) {
 
   authRouter.post('/register', (req, res) => {
     console.log('Registering User!');
@@ -29,6 +29,17 @@ module.exports = function(User) {
             password: hash
           });
           newUser.save(err => {
+            console.log(err);
+          });
+
+          const newUserDetail = new UserDetail({
+            _id: newUser._id,
+            chatname: username,
+            bio: '',
+            imageUrl: 'default.jpg',
+            color: 'black'
+          });
+          newUserDetail.save(err => {
             console.log(err);
           });
 
