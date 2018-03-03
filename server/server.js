@@ -99,7 +99,7 @@ app.get('/*', ((req, res) => {
     });
   } else {
     const userId = req.session.user;
-    User.findOne({
+    UserDetail.findOne({
       _id: userId
     }, (err, user) => { // pass logged in user to react ChatView
       res.render('index', {
@@ -130,6 +130,6 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-require('./handleWebSocket')(server, Room, Message);
+require('./handleWebSocket')(server, Room, Message, UserDetail);
 
 module.exports = app;

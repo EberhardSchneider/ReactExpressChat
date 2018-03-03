@@ -3,7 +3,7 @@ const guid = require('guid');
 // global
 let loggedInUsers = {};
 
-function handleWebSocket(server, Room, Message) {
+function handleWebSocket(server, Room, Message, UserDetail) {
 
   var io = require('socket.io')(server);
 
@@ -14,10 +14,15 @@ function handleWebSocket(server, Room, Message) {
 
     socket.on('add user', (user) => {
       socket.userId = user._id;
-      loggedInUsers[socket.userId] = user;
-      socket.emit('users updated', loggedInUsers);
+      UserDetail.find({
+        _id: user._id
+      }, (err, doc) => {
+        var userDetail = doc[0];
+        loggedInUsers[socket.userId] = userDetail;
+        // socket.emit('users updated', loggedInUsers);
+        triggerUpdateAllUsers(socket);
+      });
 
-      triggerUpdateAllUsers(socket);
     });
 
     socket.on('add room', (data) => {
@@ -33,7 +38,7 @@ function handleWebSocket(server, Room, Message) {
     socket.on('new message', (data) => {
       const message = new Message({
         _id: guid.raw(),
-        author: loggedInUsers[socket.userId].name,
+        author: loggedInUsers[socket.userId].chatname,
         roomId: socket.roomId,
         body: data.message,
         date: new Date()
@@ -72,6 +77,7 @@ function handleWebSocket(server, Room, Message) {
 
   function triggerUpdateAllUsers(socket) {
     socket.broadcast.emit('users updated', loggedInUsers);
+    socket.emit('users updated', loggedInUsers);
   }
 
   function triggerUpdateOneUser(socket, userId) {

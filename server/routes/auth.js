@@ -35,6 +35,7 @@ module.exports = function(User, UserDetail) {
           const newUserDetail = new UserDetail({
             _id: newUser._id,
             chatname: username,
+            roomId: '',
             bio: '',
             imageUrl: 'default.jpg',
             color: 'black'

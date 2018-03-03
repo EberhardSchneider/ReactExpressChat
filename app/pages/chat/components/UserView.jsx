@@ -21,10 +21,10 @@ const UserView = (props) => {
     <div id="user-names">
       <div
         className="local-user"
-        style={localUserStyle}>{localUser.name}</div>
+        style={localUserStyle}>{localUser.chatname}</div>
       { (showedUsers) ?
         showedUsers.map((user) => {
-          return (<div key={user._id}>{user.name}</div>);
+          return (<div key={user._id}>{user.chatname}</div>);
         }) : null
       }
     </div>

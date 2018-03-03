@@ -1,5 +1,4 @@
 import dataHelper from '../helpers/DataHelpers.js';
-import restHelper from '../helpers/RestHelpers.js';
 import io from 'socket.io-client';
 import guid from 'guid';
 
@@ -54,12 +53,12 @@ export default class Store {
 
     this.socket.emit('add user', user);
 
-    this.socket.on('user added', (users) => {
-      this.setData({
-        socket: this.socket,
-        users: users,
-      });
-    });
+    // this.socket.on('user added', (users) => {
+    //   this.setData({
+    //     socket: this.socket,
+    //     users: users,
+    //   });
+    // });
 
     this.socket.on('users updated', (users) => {
       // delete localuser from common users object

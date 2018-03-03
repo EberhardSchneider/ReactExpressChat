@@ -1,11 +1,14 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const userDetailSchema = new mongoose.Schema({
   _id: String,
   chatname: String,
   bio: String,
   imageUrl: String,
-  color: String
+  color: String,
+  roomId: String
 });
 
-export default userDetailSchema;
+const UserDetail = mongoose.model('UserDetail', userDetailSchema, 'userDetails');
+
+module.exports = UserDetail;
