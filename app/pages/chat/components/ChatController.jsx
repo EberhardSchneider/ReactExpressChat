@@ -36,9 +36,11 @@ class ChatController extends Component {
       selectRoom: key => {
         this.store.selectRoom(key);
       },
-
       addRoom: name => {
         this.store.addRoom(name);
+      },
+      deleteRoom: () => {
+        this.store.deleteRoom();
       }
     };
 

@@ -40,7 +40,7 @@ class RoomInput extends React.Component {
   }
 
   deleteRoom = () => {
-    console.log('Delete room');
+    this.props.actions.deleteRoom();
   }
 
   render() {
@@ -71,7 +71,7 @@ class RoomInput extends React.Component {
       }
       {
         isAdmin
-          ? <button className="center" onClick={deleteRoom}>Delete Room</button> : null
+          ? <button  onClick={this.deleteRoom}>Delete Room</button> : null
       }
     </div>);
   }

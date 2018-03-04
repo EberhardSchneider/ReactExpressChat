@@ -35,6 +35,33 @@ function handleWebSocket(server, Room, Message, UserDetail) {
       });
     });
 
+    socket.on('delete room', (data) => {
+      // send all users in this room to lobby
+      Object.entries(loggedInUsers)
+        .filter((user) => {
+          return user[1].roomId === data.room;
+        })
+        .map((user) => {
+          user[1].roomId = ''; // back to lobby
+        });
+      triggerUpdateAllUsers(socket);
+      // TODO: optimizze:
+      // write function to update Array of Users
+      // update only changed uses
+      // now delete room
+
+      Room.deleteOne({
+        _id: data.room
+      }, (err, room) => {
+        if (err) {
+          console.log('error deleting room: ' + room);
+          console.log('error: ' + err);
+        } else {
+          triggerUpdateAllRooms(socket);
+        }
+      });
+    });
+
     socket.on('new message', (data) => {
       const message = new Message({
         _id: guid.raw(),

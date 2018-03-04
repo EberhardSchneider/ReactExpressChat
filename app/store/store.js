@@ -61,12 +61,23 @@ export default class Store {
     // });
 
     this.socket.on('users updated', (users) => {
-      // delete localuser from common users object
-      const id = this.data.localUser._id;
-      if (users[id]) {
-        delete users[id];
-      }
+      const localUserId = this.data.localUser._id;
+      // update localUser
+      Object.values(users)
+        .filter(user => user._id === localUserId)
+        .map(user => {
+          // this.data.localUser = user;
+          // this.data.selectedRoom = user.roomId;
+          this.setData({
+            localUser: user,
+            selectedRoom: user.roomId
+          });
+        });
 
+      // delete localuser from common users object
+      if (users[localUserId]) {
+        delete users[localUserId];
+      }
       if (users) {
         this.setData({
           users: users
@@ -149,6 +160,18 @@ export default class Store {
   emitMessage(messageBody) {
     this.socket.emit('new message', {
       message: messageBody
+    });
+  }
+
+  deleteRoom() {
+    this.socket.emit('delete room', {
+      room: this.data.selectedRoom
+    });
+    let rooms = this.data.rooms;
+    delete rooms[this.data.selectedRoom];
+    this.setData({
+      selectedRoom: '',
+      rooms: rooms
     });
   }
 }
