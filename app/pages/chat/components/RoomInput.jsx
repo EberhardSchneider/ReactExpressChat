@@ -39,6 +39,10 @@ class RoomInput extends React.Component {
     });
   }
 
+  handleBackToLobbyClicked = () => {
+    this.props.actions.selectRoom('');
+  }
+
   deleteRoom = () => {
     this.props.actions.deleteRoom();
   }
@@ -71,7 +75,15 @@ class RoomInput extends React.Component {
       }
       {
         isAdmin
-          ? <button  onClick={this.deleteRoom}>Delete Room</button> : null
+          ? <button
+            className="u-full-width"
+            onClick={this.deleteRoom}>Delete Room</button> : null
+      }
+      {
+        !actions.isLobby() ? <button
+          className="u-full-width"
+          onClick={this.handleBackToLobbyClicked}>Back To Lobby</button>
+          : null
       }
     </div>);
   }

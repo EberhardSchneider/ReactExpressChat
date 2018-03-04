@@ -41,6 +41,9 @@ class ChatController extends Component {
       },
       deleteRoom: () => {
         this.store.deleteRoom();
+      },
+      isLobby: () => {
+        return this.state.selectedRoom === '';
       }
     };
 
