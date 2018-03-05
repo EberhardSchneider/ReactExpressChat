@@ -25,6 +25,17 @@ function handleWebSocket(server, Room, Message, UserDetail) {
 
     });
 
+    socket.on('update userdetail', (data) => {
+      const newUserDetail = data.user;
+      console.log('New Userdetail:');
+      console.log(newUserDetail);
+      UserDetail.findOneAndUpdate({
+        _id: socket.userId
+      }, newUserDetail, (err) => {
+        console.log('Error updating user detail: ' + err);
+      });
+    });
+
     socket.on('add room', (data) => {
       const newRoom = new Room(data);
       newRoom.save((err) => {

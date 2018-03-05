@@ -1,5 +1,5 @@
 import React from 'react';
-import Dashboard from './pages/dashboard/components/Dashboard.jsx';
+import DashboardController from './pages/dashboard/components/DashboardController.jsx';
 import ChatController from './pages/chat/components/ChatController.jsx';
 import Store from './store/store';
 import dataApi from './store/data-api';
@@ -20,7 +20,7 @@ export default class RootController extends React.PureComponent {
     });
 
     this.state = {
-      activeComponent: Dashboard,
+      activeComponent: DashboardController,
       store: store
     };
 
@@ -40,7 +40,7 @@ export default class RootController extends React.PureComponent {
 
   dashboardClick = () => {
     this.setState(() => ({
-      activeComponent: Dashboard
+      activeComponent: DashboardController
     }));
   }
 

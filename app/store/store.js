@@ -174,4 +174,13 @@ export default class Store {
       rooms: rooms
     });
   }
+
+  updateUser(user) {
+    this.socket.emit('update userdetail', {
+      user: user
+    });
+    this.setData({
+      localUser: user
+    });
+  }
 }
