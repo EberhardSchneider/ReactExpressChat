@@ -26,7 +26,8 @@ export default class RootController extends React.PureComponent {
 
 
 
-    dataApi.getAndPushToStore('/rooms', this.state.store);
+    dataApi.getAndPushToStore('rooms', this.state.store);
+    dataApi.getAndPushToStore('messages', this.state.store);
     this.state.store.addSocketEvents(this.props.user);
   }
 

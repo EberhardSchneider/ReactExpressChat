@@ -85,6 +85,15 @@ app.get('/rooms', (req, res) => {
   });
 });
 
+app.get('/messages', (req, res) => {
+  Message.find((err, doc) => {
+    if (err) {
+      console.log('Error retrieving messages from db: ' + err);
+    }
+    res.send(doc);
+  });
+});
+
 
 app.get('/logout', (req, res) => {
   req.session.user = undefined;
