@@ -27,8 +27,7 @@ function handleWebSocket(server, Room, Message, UserDetail) {
 
     socket.on('update userdetail', (data) => {
       const newUserDetail = data.user;
-      console.log('New Userdetail:');
-      console.log(newUserDetail);
+
       UserDetail.findOneAndUpdate({
         _id: socket.userId
       }, newUserDetail, (err) => {
