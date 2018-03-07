@@ -46,7 +46,7 @@ export default class RootController extends React.PureComponent {
   }
 
   logoutClick = () => {
-    window.location.href = '/logout';
+    window.location.href = '/auth/logout';
   }
 
 

@@ -86,5 +86,13 @@ module.exports = function(User, UserDetail) {
     });
   });
 
+
+  authRouter.get('/logout', (req, res) => {
+    req.session.user = undefined;
+    delete req.session.user;
+    req.session.message = 'Successfully logged out.';
+    res.redirect('/');
+  });
+
   return authRouter;
 };

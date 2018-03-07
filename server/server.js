@@ -95,11 +95,6 @@ app.get('/messages', (req, res) => {
 });
 
 
-app.get('/logout', (req, res) => {
-  req.session.user = undefined;
-  delete req.session.user;
-  res.redirect('/');
-});
 
 app.get('/*', ((req, res) => {
   if (!req.session.user) {
