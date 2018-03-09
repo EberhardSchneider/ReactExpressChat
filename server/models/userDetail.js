@@ -12,3 +12,5 @@ const userDetailSchema = new mongoose.Schema({
 const UserDetail = mongoose.model('UserDetail', userDetailSchema, 'userDetails');
 
 module.exports = UserDetail;
+
+// renamed
