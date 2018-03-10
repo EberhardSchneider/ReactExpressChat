@@ -39,8 +39,7 @@ class LoginView extends React.Component {
             <input className="u-full-width"
               name="username"
               id="username"
-              type="text"
-              autoFocus={true}/>
+              type="text"/>
           </div>
 
           <div className="row">
