@@ -105,7 +105,7 @@ app.get('/*', ((req, res) => {
     const userId = req.session.user;
     UserDetail.findOne({
       _id: userId
-    }, (err, user) => { // pass logged in user to react ChatView
+    }, (err, user) => { // pass logged in users detail  to react ChatView
       res.render('index', {
         user
       });
