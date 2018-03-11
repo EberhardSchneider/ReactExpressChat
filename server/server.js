@@ -5,6 +5,7 @@ var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 const session = require('express-session');
+const flash = require('connect-flash');
 
 // mongoose
 require('./database.js');
@@ -40,6 +41,8 @@ app.use(session({
     secure: false // change for production!
   }
 }));
+
+app.use(flash());
 
 
 
@@ -88,7 +91,8 @@ app.use(passport.session());
 app.post('/auth/login',
   passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/login'
+    failureRedirect: '/login',
+    failureFlash: true
   }));
 app.use('/auth', authRouter);
 
@@ -112,7 +116,7 @@ app.get('/messages', (req, res) => {
 app.get('/*', ((req, res) => {
   if (!req.isAuthenticated()) {
     res.render('login', {
-      message: req.session.message
+      message: req.flash('error')
     });
   } else {
     const userId = req.user;

@@ -89,7 +89,7 @@ module.exports = function(User, UserDetail) {
 
 
   authRouter.get('/logout', (req, res) => {
-    req.session.message = 'Successfully logged out.';
+    req.flash('message', 'Successfully logged out.');
     req.logout();
     res.redirect('/');
   });
