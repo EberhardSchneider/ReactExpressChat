@@ -13,6 +13,9 @@ const Message = require('./models/Message.js');
 const User = require('./models/User.js');
 const UserDetail = require('./models/UserDetail.js');
 
+// passport.js
+const passport = require('./passport.js')(User);
+
 // routes
 const authRouter = require('./routes/auth')(User, UserDetail);
 
@@ -37,6 +40,8 @@ app.use(session({
     secure: false // change for production!
   }
 }));
+
+
 
 // webpack setup ____________________________________________________________
 
@@ -74,9 +79,17 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 // routes ____________________________________________________________
 
+
+app.post('/auth/login',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  }));
 app.use('/auth', authRouter);
 
 app.get('/rooms', (req, res) => {
@@ -97,12 +110,12 @@ app.get('/messages', (req, res) => {
 
 
 app.get('/*', ((req, res) => {
-  if (!req.session.user) {
+  if (!req.isAuthenticated()) {
     res.render('login', {
       message: req.session.message
     });
   } else {
-    const userId = req.session.user;
+    const userId = req.user;
     UserDetail.findOne({
       _id: userId
     }, (err, user) => { // pass logged in users detail  to react ChatView
@@ -112,6 +125,11 @@ app.get('/*', ((req, res) => {
     });
   }
 }));
+
+// app.get('/', (req, res) => {
+//   const isAuth = req.isAuthenticated ? req.isAuthenticated() : 'Not authenticated';
+//   res.send(isAuth);
+// });
 
 
 
